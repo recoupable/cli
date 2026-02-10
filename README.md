@@ -18,6 +18,15 @@ Set your API key as an environment variable:
 export RECOUP_API_KEY=your-api-key
 ```
 
+To persist it across sessions, add it to your shell profile:
+
+```bash
+echo 'export RECOUP_API_KEY=your-api-key' >> ~/.zshrc
+source ~/.zshrc
+```
+
+> Use `~/.bashrc` instead if you use bash.
+
 ### Verify
 
 ```bash
