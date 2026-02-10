@@ -1,0 +1,29 @@
+{
+  "name": "@recoupable/cli",
+  "version": "0.1.0",
+  "description": "Recoup platform CLI",
+  "type": "module",
+  "bin": {
+    "recoup": "./dist/bin.cjs"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run",
+    "lint": "eslint . --ext .ts --fix",
+    "format": "prettier --write \"src/**/*.ts\""
+  },
+  "dependencies": {
+    "commander": "^13.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0",
+    "tsup": "^8.0.0",
+    "vitest": "^3.2.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": ["esbuild"]
+  }
+}
