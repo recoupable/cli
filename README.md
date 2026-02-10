@@ -12,11 +12,20 @@ npm install -g @recoupable/cli
 
 ### Authenticate
 
-Set your API key as an environment variable:
+Get your API key from the [Recoup Developer Dashboard](https://developers.recoupable.com/api-reference/introduction#getting-your-api-key), then set it as an environment variable:
 
 ```bash
 export RECOUP_API_KEY=your-api-key
 ```
+
+To persist it across sessions, add it to your shell profile:
+
+```bash
+echo 'export RECOUP_API_KEY=your-api-key' >> ~/.zshrc
+source ~/.zshrc
+```
+
+> Use `~/.bashrc` instead if you use bash.
 
 ### Verify
 
