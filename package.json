@@ -1,6 +1,6 @@
 {
   "name": "@recoupable/cli",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Recoup platform CLI",
   "type": "module",
   "bin": {
@@ -28,6 +28,8 @@
     "access": "public"
   },
   "pnpm": {
-    "onlyBuiltDependencies": ["esbuild"]
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
   }
 }
