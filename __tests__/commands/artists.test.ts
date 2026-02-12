@@ -36,9 +36,22 @@ describe("artists list", () => {
 
     await artistsCommand.parseAsync(["list"], { from: "user" });
 
-    expect(get).toHaveBeenCalledWith("/api/artists");
+    expect(get).toHaveBeenCalledWith("/api/artists", {});
     // header + separator + 2 data rows
     expect(logSpy).toHaveBeenCalledTimes(4);
+  });
+
+  it("passes orgId when --org is provided", async () => {
+    vi.mocked(get).mockResolvedValue({
+      status: "success",
+      artists: [{ account_id: "a1", name: "Artist One", label: "Label A" }],
+    });
+
+    await artistsCommand.parseAsync(["list", "--org", "org-123"], {
+      from: "user",
+    });
+
+    expect(get).toHaveBeenCalledWith("/api/artists", { orgId: "org-123" });
   });
 
   it("prints JSON with --json flag", async () => {
