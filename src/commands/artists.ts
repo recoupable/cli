@@ -5,9 +5,12 @@ import { printJson, printTable, printError } from "../output.js";
 const listCommand = new Command("list")
   .description("List artists for the current account")
   .option("--json", "Output as JSON")
+  .option("--org <orgId>", "Filter by organization ID")
   .action(async (opts) => {
     try {
-      const data = await get("/api/artists");
+      const params: Record<string, string> = {};
+      if (opts.org) params.orgId = opts.org;
+      const data = await get("/api/artists", params);
       const artists = (data.artists as Record<string, unknown>[]) || [];
 
       if (opts.json) {
