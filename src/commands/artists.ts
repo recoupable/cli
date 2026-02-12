@@ -9,7 +9,7 @@ const listCommand = new Command("list")
   .action(async (opts) => {
     try {
       const params: Record<string, string> = {};
-      if (opts.org) params.orgId = opts.org;
+      if (opts.org) params.org_id = opts.org;
       const data = await get("/api/artists", params);
       const artists = (data.artists as Record<string, unknown>[]) || [];
 

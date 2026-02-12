@@ -51,7 +51,7 @@ describe("artists list", () => {
       from: "user",
     });
 
-    expect(get).toHaveBeenCalledWith("/api/artists", { orgId: "org-123" });
+    expect(get).toHaveBeenCalledWith("/api/artists", { org_id: "org-123" });
   });
 
   it("prints JSON with --json flag", async () => {
