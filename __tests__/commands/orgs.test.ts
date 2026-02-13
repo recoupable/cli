@@ -36,8 +36,21 @@ describe("orgs list", () => {
 
     await orgsCommand.parseAsync(["list"], { from: "user" });
 
-    expect(get).toHaveBeenCalledWith("/api/organizations");
+    expect(get).toHaveBeenCalledWith("/api/organizations", {});
     expect(logSpy).toHaveBeenCalledTimes(4); // header + separator + 2 rows
+  });
+
+  it("passes account_id when --account is provided", async () => {
+    vi.mocked(get).mockResolvedValue({
+      status: "success",
+      organizations: [{ organization_id: "org-1", organization_name: "My Org" }],
+    });
+
+    await orgsCommand.parseAsync(["list", "--account", "acc-123"], {
+      from: "user",
+    });
+
+    expect(get).toHaveBeenCalledWith("/api/organizations", { account_id: "acc-123" });
   });
 
   it("prints JSON with --json flag", async () => {

@@ -6,10 +6,12 @@ const listCommand = new Command("list")
   .description("List artists for the current account")
   .option("--json", "Output as JSON")
   .option("--org <orgId>", "Filter by organization ID")
+  .option("--account <accountId>", "Filter by account ID")
   .action(async (opts) => {
     try {
       const params: Record<string, string> = {};
       if (opts.org) params.org_id = opts.org;
+      if (opts.account) params.account_id = opts.account;
       const data = await get("/api/artists", params);
       const artists = (data.artists as Record<string, unknown>[]) || [];
 
