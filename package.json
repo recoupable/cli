@@ -1,6 +1,6 @@
 {
   "name": "@recoupable/cli",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Recoup platform CLI",
   "type": "module",
   "bin": {
