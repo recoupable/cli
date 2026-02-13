@@ -5,9 +5,12 @@ import { printJson, printTable, printError } from "../output.js";
 const listCommand = new Command("list")
   .description("List organizations for the current account")
   .option("--json", "Output as JSON")
+  .option("--account <accountId>", "Filter by account ID")
   .action(async (opts) => {
     try {
-      const data = await get("/api/organizations");
+      const params: Record<string, string> = {};
+      if (opts.account) params.account_id = opts.account;
+      const data = await get("/api/organizations", params);
       const orgs = (data.organizations as Record<string, unknown>[]) || [];
 
       if (opts.json) {

@@ -54,6 +54,32 @@ describe("artists list", () => {
     expect(get).toHaveBeenCalledWith("/api/artists", { org_id: "org-123" });
   });
 
+  it("passes account_id when --account is provided", async () => {
+    vi.mocked(get).mockResolvedValue({
+      status: "success",
+      artists: [{ account_id: "a1", name: "Artist One", label: "Label A" }],
+    });
+
+    await artistsCommand.parseAsync(["list", "--account", "acc-123"], {
+      from: "user",
+    });
+
+    expect(get).toHaveBeenCalledWith("/api/artists", { account_id: "acc-123" });
+  });
+
+  it("combines --account and --org flags", async () => {
+    vi.mocked(get).mockResolvedValue({
+      status: "success",
+      artists: [{ account_id: "a1", name: "Artist One", label: "Label A" }],
+    });
+
+    await artistsCommand.parseAsync(["list", "--account", "acc-123", "--org", "org-456"], {
+      from: "user",
+    });
+
+    expect(get).toHaveBeenCalledWith("/api/artists", { account_id: "acc-123", org_id: "org-456" });
+  });
+
   it("prints JSON with --json flag", async () => {
     const artists = [{ account_id: "a1", name: "Artist One", label: "Label" }];
     vi.mocked(get).mockResolvedValue({ status: "success", artists });
