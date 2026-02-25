@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { Command } from "commander";
 import { whoamiCommand } from "./commands/whoami.js";
 import { artistsCommand } from "./commands/artists.js";
@@ -6,12 +8,15 @@ import { sandboxesCommand } from "./commands/sandboxes.js";
 import { notificationsCommand } from "./commands/notifications.js";
 import { orgsCommand } from "./commands/orgs.js";
 
+const pkgPath = join(__dirname, "..", "package.json");
+const { version } = JSON.parse(readFileSync(pkgPath, "utf-8"));
+
 const program = new Command();
 
 program
   .name("recoup")
   .description("Recoup platform CLI")
-  .version("0.1.0");
+  .version(version);
 
 program.addCommand(whoamiCommand);
 program.addCommand(artistsCommand);
