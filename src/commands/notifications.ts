@@ -9,6 +9,7 @@ export const notificationsCommand = new Command("notifications")
   .option("--html <body>", "Raw HTML body (takes precedence over --text)")
   .option("--cc <email>", "CC recipient (repeatable)", (val: string, prev: string[]) => prev.concat(val), [] as string[])
   .option("--room-id <id>", "Room ID for chat link in footer")
+  .option("--account <accountId>", "Send to a specific account (org keys only)")
   .option("--json", "Output as JSON")
   .action(async (opts) => {
     try {
@@ -19,6 +20,7 @@ export const notificationsCommand = new Command("notifications")
       if (opts.html) body.html = opts.html;
       if (opts.cc && opts.cc.length > 0) body.cc = opts.cc;
       if (opts.roomId) body.room_id = opts.roomId;
+      if (opts.account) body.account_id = opts.account;
 
       const data = await post("/api/notifications", body);
 

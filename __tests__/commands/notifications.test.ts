@@ -134,6 +134,49 @@ describe("notifications command", () => {
     );
   });
 
+  it("passes account_id when --account flag is provided", async () => {
+    vi.mocked(post).mockResolvedValue({
+      success: true,
+      message: "Email sent successfully.",
+      id: "email-account",
+    });
+
+    await notificationsCommand.parseAsync(
+      [
+        "--subject",
+        "Override Test",
+        "--text",
+        "Hello member",
+        "--account",
+        "550e8400-e29b-41d4-a716-446655440000",
+      ],
+      { from: "user" },
+    );
+
+    expect(post).toHaveBeenCalledWith("/api/notifications", {
+      subject: "Override Test",
+      text: "Hello member",
+      account_id: "550e8400-e29b-41d4-a716-446655440000",
+    });
+  });
+
+  it("does not include account_id when --account is omitted", async () => {
+    vi.mocked(post).mockResolvedValue({
+      success: true,
+      message: "Email sent successfully.",
+      id: "email-no-account",
+    });
+
+    await notificationsCommand.parseAsync(
+      ["--subject", "Test"],
+      { from: "user" },
+    );
+
+    expect(post).toHaveBeenCalledWith("/api/notifications", {
+      subject: "Test",
+    });
+  });
+
   it("prints error on failure", async () => {
     vi.mocked(post).mockRejectedValue(new Error("No email address found"));
 
