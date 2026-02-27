@@ -22,7 +22,7 @@ const analyzeCommand = new Command("analyze")
       if (opts.audio) body.audio_url = opts.audio;
       if (opts.maxTokens) body.max_new_tokens = opts.maxTokens;
 
-      const data = await post("/api/music/analyze", body);
+      const data = await post("/api/songs/analyze", body);
 
       if (opts.json) {
         printJson(data);
@@ -59,7 +59,7 @@ const presetsCommand = new Command("presets")
   .option("--json", "Output as JSON")
   .action(async (opts) => {
     try {
-      const data = await get("/api/music/presets");
+      const data = await get("/api/songs/analyze/presets");
       const presets = (data.presets as Record<string, unknown>[]) || [];
 
       if (opts.json) {

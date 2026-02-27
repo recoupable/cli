@@ -25,7 +25,7 @@ afterEach(() => {
 });
 
 describe("music analyze", () => {
-  it("sends custom prompt to /api/music/analyze", async () => {
+  it("sends custom prompt to /api/songs/analyze", async () => {
     vi.mocked(post).mockResolvedValue({
       status: "success",
       response: "This is jazz music.",
@@ -37,12 +37,12 @@ describe("music analyze", () => {
       { from: "user" },
     );
 
-    expect(post).toHaveBeenCalledWith("/api/music/analyze", {
+    expect(post).toHaveBeenCalledWith("/api/songs/analyze", {
       prompt: "What genre is this?",
     });
   });
 
-  it("sends preset to /api/music/analyze", async () => {
+  it("sends preset to /api/songs/analyze", async () => {
     vi.mocked(post).mockResolvedValue({
       status: "success",
       preset: "catalog_metadata",
@@ -55,7 +55,7 @@ describe("music analyze", () => {
       { from: "user" },
     );
 
-    expect(post).toHaveBeenCalledWith("/api/music/analyze", {
+    expect(post).toHaveBeenCalledWith("/api/songs/analyze", {
       preset: "catalog_metadata",
       audio_url: "https://example.com/song.mp3",
     });
@@ -121,7 +121,7 @@ describe("music analyze", () => {
       { from: "user" },
     );
 
-    expect(post).toHaveBeenCalledWith("/api/music/analyze", {
+    expect(post).toHaveBeenCalledWith("/api/songs/analyze", {
       prompt: "Describe this.",
       audio_url: "https://example.com/song.mp3",
     });
@@ -148,7 +148,7 @@ describe("music analyze", () => {
 });
 
 describe("music presets", () => {
-  it("lists presets from /api/music/presets", async () => {
+  it("lists presets from /api/songs/analyze/presets", async () => {
     vi.mocked(get).mockResolvedValue({
       status: "success",
       presets: [
@@ -159,7 +159,7 @@ describe("music presets", () => {
 
     await musicCommand.parseAsync(["presets"], { from: "user" });
 
-    expect(get).toHaveBeenCalledWith("/api/music/presets");
+    expect(get).toHaveBeenCalledWith("/api/songs/analyze/presets");
     expect(logSpy).toHaveBeenCalled();
   });
 
