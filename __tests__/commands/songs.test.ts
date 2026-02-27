@@ -5,7 +5,7 @@ vi.mock("../../src/client.js", () => ({
   post: vi.fn(),
 }));
 
-import { musicCommand } from "../../src/commands/music.js";
+import { songsCommand } from "../../src/commands/songs.js";
 import { get, post } from "../../src/client.js";
 
 let logSpy: ReturnType<typeof vi.spyOn>;
@@ -24,7 +24,7 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-describe("music analyze", () => {
+describe("songs analyze", () => {
   it("sends custom prompt to /api/songs/analyze", async () => {
     vi.mocked(post).mockResolvedValue({
       status: "success",
@@ -32,10 +32,7 @@ describe("music analyze", () => {
       elapsed_seconds: 3.2,
     });
 
-    await musicCommand.parseAsync(
-      ["analyze", "What genre is this?"],
-      { from: "user" },
-    );
+    await songsCommand.parseAsync(["analyze", "--prompt", "What genre is this?"], { from: "user" });
 
     expect(post).toHaveBeenCalledWith("/api/songs/analyze", {
       prompt: "What genre is this?",
@@ -50,10 +47,7 @@ describe("music analyze", () => {
       elapsed_seconds: 8.0,
     });
 
-    await musicCommand.parseAsync(
-      ["analyze", "--preset", "catalog_metadata", "--audio", "https://example.com/song.mp3"],
-      { from: "user" },
-    );
+    await songsCommand.parseAsync(["analyze", "--preset", "catalog_metadata", "--audio", "https://example.com/song.mp3"], { from: "user" });
 
     expect(post).toHaveBeenCalledWith("/api/songs/analyze", {
       preset: "catalog_metadata",
@@ -68,10 +62,7 @@ describe("music analyze", () => {
       elapsed_seconds: 2.5,
     });
 
-    await musicCommand.parseAsync(
-      ["analyze", "Describe this track."],
-      { from: "user" },
-    );
+    await songsCommand.parseAsync(["analyze", "--prompt", "Describe this track."], { from: "user" });
 
     expect(logSpy).toHaveBeenCalledWith("This is a jazz piece in Bb major.");
   });
@@ -83,10 +74,7 @@ describe("music analyze", () => {
       elapsed_seconds: 10.0,
     });
 
-    await musicCommand.parseAsync(
-      ["analyze", "--preset", "catalog_metadata", "--audio", "https://example.com/song.mp3"],
-      { from: "user" },
-    );
+    await songsCommand.parseAsync(["analyze", "--preset", "catalog_metadata", "--audio", "https://example.com/song.mp3"], { from: "user" });
 
     expect(logSpy).toHaveBeenCalledWith(
       JSON.stringify({ genre: "pop", tempo_bpm: 96 }, null, 2),
@@ -101,10 +89,7 @@ describe("music analyze", () => {
     };
     vi.mocked(post).mockResolvedValue(data);
 
-    await musicCommand.parseAsync(
-      ["analyze", "Describe this.", "--json"],
-      { from: "user" },
-    );
+    await songsCommand.parseAsync(["analyze", "--prompt", "Describe this.", "--json"], { from: "user" });
 
     expect(logSpy).toHaveBeenCalledWith(JSON.stringify(data, null, 2));
   });
@@ -116,10 +101,7 @@ describe("music analyze", () => {
       elapsed_seconds: 10.0,
     });
 
-    await musicCommand.parseAsync(
-      ["analyze", "Describe this.", "--audio", "https://example.com/song.mp3"],
-      { from: "user" },
-    );
+    await songsCommand.parseAsync(["analyze", "--prompt", "Describe this.", "--audio", "https://example.com/song.mp3"], { from: "user" });
 
     expect(post).toHaveBeenCalledWith("/api/songs/analyze", {
       prompt: "Describe this.",
@@ -130,24 +112,21 @@ describe("music analyze", () => {
   it("prints error on failure", async () => {
     vi.mocked(post).mockRejectedValue(new Error("Service Unavailable"));
 
-    await musicCommand.parseAsync(
-      ["analyze", "Describe this."],
-      { from: "user" },
-    );
+    await songsCommand.parseAsync(["analyze", "--prompt", "Describe this."], { from: "user" });
 
     expect(errorSpy).toHaveBeenCalledWith("Error: Service Unavailable");
     expect(exitSpy).toHaveBeenCalledWith(1);
   });
 
   it("exits with error when no prompt or preset given", async () => {
-    await musicCommand.parseAsync(["analyze"], { from: "user" });
+    await songsCommand.parseAsync(["analyze"], { from: "user" });
 
     expect(errorSpy).toHaveBeenCalled();
     expect(exitSpy).toHaveBeenCalledWith(1);
   });
 });
 
-describe("music presets", () => {
+describe("songs presets", () => {
   it("lists presets from /api/songs/analyze/presets", async () => {
     vi.mocked(get).mockResolvedValue({
       status: "success",
@@ -157,7 +136,7 @@ describe("music presets", () => {
       ],
     });
 
-    await musicCommand.parseAsync(["presets"], { from: "user" });
+    await songsCommand.parseAsync(["presets"], { from: "user" });
 
     expect(get).toHaveBeenCalledWith("/api/songs/analyze/presets");
     expect(logSpy).toHaveBeenCalled();
@@ -169,7 +148,7 @@ describe("music presets", () => {
     ];
     vi.mocked(get).mockResolvedValue({ status: "success", presets });
 
-    await musicCommand.parseAsync(["presets", "--json"], { from: "user" });
+    await songsCommand.parseAsync(["presets", "--json"], { from: "user" });
 
     expect(logSpy).toHaveBeenCalledWith(JSON.stringify(presets, null, 2));
   });

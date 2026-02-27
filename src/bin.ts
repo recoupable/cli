@@ -5,7 +5,7 @@ import { whoamiCommand } from "./commands/whoami.js";
 import { artistsCommand } from "./commands/artists.js";
 import { chatsCommand } from "./commands/chats.js";
 import { sandboxesCommand } from "./commands/sandboxes.js";
-import { musicCommand } from "./commands/music.js";
+import { songsCommand } from "./commands/songs.js";
 import { notificationsCommand } from "./commands/notifications.js";
 import { orgsCommand } from "./commands/orgs.js";
 
@@ -22,7 +22,7 @@ program
 program.addCommand(whoamiCommand);
 program.addCommand(artistsCommand);
 program.addCommand(chatsCommand);
-program.addCommand(musicCommand);
+program.addCommand(songsCommand);
 program.addCommand(notificationsCommand);
 program.addCommand(sandboxesCommand);
 program.addCommand(orgsCommand);
