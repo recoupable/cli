@@ -91,6 +91,7 @@ const createCommand = new Command("create")
   .option("--lipsync", "Enable lipsync mode")
   .option("--caption-length <length>", "Caption length: short, medium, long", "short")
   .option("--upscale", "Upscale image and video for higher quality")
+  .option("--batch <count>", "Generate multiple videos in parallel", "1")
   .option("--json", "Output as JSON")
   .action(async opts => {
     try {
@@ -100,6 +101,7 @@ const createCommand = new Command("create")
         lipsync: !!opts.lipsync,
         caption_length: opts.captionLength,
         upscale: !!opts.upscale,
+        batch: parseInt(opts.batch, 10),
       });
 
       if (opts.json) {
@@ -107,7 +109,14 @@ const createCommand = new Command("create")
         return;
       }
 
-      console.log(`Run started: ${data.runId}`);
+      if (data.runIds) {
+        console.log(`Batch started: ${data.runIds.length} videos`);
+        for (const id of data.runIds as string[]) {
+          console.log(`  - ${id}`);
+        }
+      } else {
+        console.log(`Run started: ${data.runId}`);
+      }
       console.log("Use `recoup content status --run <runId>` to poll status.");
     } catch (err) {
       printError((err as Error).message);

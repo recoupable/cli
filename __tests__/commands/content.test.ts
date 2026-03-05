@@ -89,6 +89,7 @@ describe("content command", () => {
       lipsync: false,
       caption_length: "short",
       upscale: false,
+      batch: 1,
     });
     expect(logSpy).toHaveBeenCalledWith("Run started: run_abc123");
   });
