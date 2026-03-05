@@ -74,7 +74,7 @@ describe("content command", () => {
 
   it("creates content run", async () => {
     vi.mocked(post).mockResolvedValue({
-      runId: "run_abc123",
+      runIds: ["run_abc123"],
       status: "triggered",
     });
 
@@ -91,7 +91,7 @@ describe("content command", () => {
       upscale: false,
       batch: 1,
     });
-    expect(logSpy).toHaveBeenCalledWith("Run started: run_abc123");
+    expect(logSpy).toHaveBeenCalledWith(`Run started: run_abc123`);
   });
 
   it("creates content run with custom flags", async () => {

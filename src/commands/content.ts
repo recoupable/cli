@@ -109,13 +109,14 @@ const createCommand = new Command("create")
         return;
       }
 
-      if (data.runIds) {
-        console.log(`Batch started: ${data.runIds.length} videos`);
-        for (const id of data.runIds as string[]) {
+      const runIds = data.runIds as string[];
+      if (runIds.length === 1) {
+        console.log(`Run started: ${runIds[0]}`);
+      } else {
+        console.log(`Batch started: ${runIds.length} videos`);
+        for (const id of runIds) {
           console.log(`  - ${id}`);
         }
-      } else {
-        console.log(`Run started: ${data.runId}`);
       }
       console.log("Use `recoup content status --run <runId>` to poll status.");
     } catch (err) {
