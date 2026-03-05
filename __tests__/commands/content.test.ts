@@ -87,6 +87,7 @@ describe("content command", () => {
       artist_slug: "gatsby-grace",
       template: "artist-caption-bedroom",
       lipsync: false,
+      caption_length: "short",
     });
     expect(logSpy).toHaveBeenCalledWith("Run started: run_abc123");
   });

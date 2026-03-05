@@ -89,6 +89,7 @@ const createCommand = new Command("create")
   .requiredOption("--artist <slug>", "Artist slug")
   .option("--template <name>", "Template name", "artist-caption-bedroom")
   .option("--lipsync", "Enable lipsync mode")
+  .option("--caption-length <length>", "Caption length: short, medium, long", "short")
   .option("--json", "Output as JSON")
   .action(async opts => {
     try {
@@ -96,6 +97,7 @@ const createCommand = new Command("create")
         artist_slug: opts.artist,
         template: opts.template,
         lipsync: !!opts.lipsync,
+        caption_length: opts.captionLength,
       });
 
       if (opts.json) {
