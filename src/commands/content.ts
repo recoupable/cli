@@ -90,6 +90,7 @@ const createCommand = new Command("create")
   .option("--template <name>", "Template name", "artist-caption-bedroom")
   .option("--lipsync", "Enable lipsync mode")
   .option("--caption-length <length>", "Caption length: short, medium, long", "short")
+  .option("--upscale", "Upscale image and video for higher quality")
   .option("--json", "Output as JSON")
   .action(async opts => {
     try {
@@ -98,6 +99,7 @@ const createCommand = new Command("create")
         template: opts.template,
         lipsync: !!opts.lipsync,
         caption_length: opts.captionLength,
+        upscale: !!opts.upscale,
       });
 
       if (opts.json) {

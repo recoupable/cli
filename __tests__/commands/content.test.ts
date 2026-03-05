@@ -88,6 +88,7 @@ describe("content command", () => {
       template: "artist-caption-bedroom",
       lipsync: false,
       caption_length: "short",
+      upscale: false,
     });
     expect(logSpy).toHaveBeenCalledWith("Run started: run_abc123");
   });
