@@ -94,6 +94,27 @@ describe("content command", () => {
     expect(logSpy).toHaveBeenCalledWith("Run started: run_abc123");
   });
 
+  it("creates content run with custom flags", async () => {
+    vi.mocked(post).mockResolvedValue({
+      runId: "run_xyz789",
+      status: "triggered",
+    });
+
+    await contentCommand.parseAsync(
+      ["create", "--artist", "test-artist", "--caption-length", "long", "--upscale", "--batch", "3"],
+      { from: "user" },
+    );
+
+    expect(post).toHaveBeenCalledWith("/api/content/create", {
+      artist_slug: "test-artist",
+      template: "artist-caption-bedroom",
+      lipsync: false,
+      caption_length: "long",
+      upscale: true,
+      batch: 3,
+    });
+  });
+
   it("shows run status and video URL", async () => {
     vi.mocked(get).mockResolvedValue({
       status: "success",
