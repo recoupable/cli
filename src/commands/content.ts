@@ -32,12 +32,12 @@ const templatesCommand = new Command("templates")
 
 const validateCommand = new Command("validate")
   .description("Validate whether an artist is ready for content creation")
-  .requiredOption("--artist <slug>", "Artist slug")
+  .requiredOption("--artist <id>", "Artist account ID")
   .option("--json", "Output as JSON")
   .action(async opts => {
     try {
       const data = await get("/api/content/validate", {
-        artist_slug: opts.artist,
+        artist_account_id: opts.artist,
       });
 
       if (opts.json) {
@@ -45,7 +45,6 @@ const validateCommand = new Command("validate")
         return;
       }
 
-      console.log(`Artist: ${data.artist_slug}`);
       console.log(`Ready: ${data.ready ? "yes" : "no"}`);
       if (Array.isArray(data.missing) && data.missing.length > 0) {
         console.log("Missing:");
@@ -86,7 +85,7 @@ const estimateCommand = new Command("estimate")
 
 const createCommand = new Command("create")
   .description("Trigger content creation pipeline")
-  .requiredOption("--artist <slug>", "Artist slug")
+  .requiredOption("--artist <id>", "Artist account ID")
   .option("--template <name>", "Template name", "artist-caption-bedroom")
   .option("--lipsync", "Enable lipsync mode")
   .option("--caption-length <length>", "Caption length: short, medium, long", "short")
@@ -96,7 +95,7 @@ const createCommand = new Command("create")
   .action(async opts => {
     try {
       const data = await post("/api/content/create", {
-        artist_slug: opts.artist,
+        artist_account_id: opts.artist,
         template: opts.template,
         lipsync: !!opts.lipsync,
         caption_length: opts.captionLength,

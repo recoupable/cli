@@ -42,17 +42,17 @@ describe("content command", () => {
   it("validates an artist", async () => {
     vi.mocked(get).mockResolvedValue({
       status: "success",
-      artist_slug: "gatsby-grace",
+      artist_account_id: "550e8400-e29b-41d4-a716-446655440000",
       ready: true,
       missing: [],
     });
 
-    await contentCommand.parseAsync(["validate", "--artist", "gatsby-grace"], { from: "user" });
+    await contentCommand.parseAsync(["validate", "--artist", "550e8400-e29b-41d4-a716-446655440000"], { from: "user" });
 
     expect(get).toHaveBeenCalledWith("/api/content/validate", {
-      artist_slug: "gatsby-grace",
+      artist_account_id: "550e8400-e29b-41d4-a716-446655440000",
     });
-    expect(logSpy).toHaveBeenCalledWith("Artist: gatsby-grace");
+    expect(logSpy).toHaveBeenCalledWith("Ready: yes");
   });
 
   it("estimates content cost", async () => {
@@ -79,12 +79,12 @@ describe("content command", () => {
     });
 
     await contentCommand.parseAsync(
-      ["create", "--artist", "gatsby-grace", "--template", "artist-caption-bedroom"],
+      ["create", "--artist", "550e8400-e29b-41d4-a716-446655440000", "--template", "artist-caption-bedroom"],
       { from: "user" },
     );
 
     expect(post).toHaveBeenCalledWith("/api/content/create", {
-      artist_slug: "gatsby-grace",
+      artist_account_id: "550e8400-e29b-41d4-a716-446655440000",
       template: "artist-caption-bedroom",
       lipsync: false,
       caption_length: "short",
@@ -106,7 +106,7 @@ describe("content command", () => {
     );
 
     expect(post).toHaveBeenCalledWith("/api/content/create", {
-      artist_slug: "test-artist",
+      artist_account_id: "test-artist",
       template: "artist-caption-bedroom",
       lipsync: false,
       caption_length: "long",
