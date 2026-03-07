@@ -8,6 +8,7 @@ import { sandboxesCommand } from "./commands/sandboxes.js";
 import { songsCommand } from "./commands/songs.js";
 import { notificationsCommand } from "./commands/notifications.js";
 import { orgsCommand } from "./commands/orgs.js";
+import { contentCommand } from "./commands/content.js";
 
 const pkgPath = join(__dirname, "..", "package.json");
 const { version } = JSON.parse(readFileSync(pkgPath, "utf-8"));
@@ -26,5 +27,6 @@ program.addCommand(songsCommand);
 program.addCommand(notificationsCommand);
 program.addCommand(sandboxesCommand);
 program.addCommand(orgsCommand);
+program.addCommand(contentCommand);
 
 program.parse();
