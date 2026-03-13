@@ -115,26 +115,20 @@ describe("content command", () => {
     });
   });
 
-  it("shows run status and video URL", async () => {
-    vi.mocked(get).mockResolvedValue({
-      status: "success",
-      runs: [
-        {
-          id: "run_abc123",
-          status: "COMPLETED",
-          output: {
-            video: {
-              signedUrl: "https://example.com/video.mp4",
-            },
-          },
-        },
-      ],
+  it("shows tasks status hint after create", async () => {
+    vi.mocked(post).mockResolvedValue({
+      runIds: ["run_abc123"],
+      status: "triggered",
     });
 
-    await contentCommand.parseAsync(["status", "--run", "run_abc123"], { from: "user" });
+    await contentCommand.parseAsync(
+      ["create", "--artist", "550e8400-e29b-41d4-a716-446655440000"],
+      { from: "user" },
+    );
 
-    expect(get).toHaveBeenCalledWith("/api/tasks/runs", { runId: "run_abc123" });
-    expect(logSpy).toHaveBeenCalledWith("Video URL: https://example.com/video.mp4");
+    expect(logSpy).toHaveBeenCalledWith(
+      "Use `recoup tasks status --run <runId>` to check progress.",
+    );
   });
 
   it("prints error when API call fails", async () => {

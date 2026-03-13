@@ -117,39 +117,7 @@ const createCommand = new Command("create")
           console.log(`  - ${id}`);
         }
       }
-      console.log("Use `recoup content status --run <runId>` to poll status.");
-    } catch (err) {
-      printError((err as Error).message);
-    }
-  });
-
-const statusCommand = new Command("status")
-  .description("Poll content creation run status")
-  .requiredOption("--run <runId>", "Trigger.dev run ID")
-  .option("--json", "Output as JSON")
-  .action(async opts => {
-    try {
-      const data = await get("/api/tasks/runs", { runId: opts.run });
-      if (opts.json) {
-        printJson(data);
-        return;
-      }
-
-      const runs = Array.isArray(data.runs) ? data.runs : [];
-      const run = runs[0] as Record<string, unknown> | undefined;
-      if (!run) {
-        console.log("Run not found.");
-        return;
-      }
-
-      console.log(`Run: ${run.id}`);
-      console.log(`Status: ${run.status}`);
-
-      const output = run.output as Record<string, unknown> | undefined;
-      const video = (output?.video || null) as Record<string, unknown> | null;
-      if (video?.signedUrl) {
-        console.log(`Video URL: ${video.signedUrl}`);
-      }
+      console.log("Use `recoup tasks status --run <runId>` to check progress.");
     } catch (err) {
       printError((err as Error).message);
     }
@@ -159,5 +127,4 @@ contentCommand.addCommand(templatesCommand);
 contentCommand.addCommand(validateCommand);
 contentCommand.addCommand(estimateCommand);
 contentCommand.addCommand(createCommand);
-contentCommand.addCommand(statusCommand);
 
