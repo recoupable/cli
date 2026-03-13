@@ -1,6 +1,16 @@
 import { Command } from "commander";
 import { get, post } from "../client.js";
-import { printError, printJson } from "../output.js";
+import { getErrorMessage, printError, printJson } from "../output.js";
+
+const ALLOWED_CAPTION_LENGTHS = new Set(["short", "medium", "long"]);
+
+const parsePositiveInt = (value: string, flag: string): number => {
+  const parsed = parseInt(value, 10);
+  if (!Number.isInteger(parsed) || parsed < 1) {
+    throw new Error(`${flag} must be a positive integer`);
+  }
+  return parsed;
+};
 
 export const contentCommand = new Command("content")
   .description("Content-creation pipeline commands");
@@ -26,7 +36,7 @@ const templatesCommand = new Command("templates")
         console.log(`- ${template.name}: ${template.description}`);
       }
     } catch (err) {
-      printError((err as Error).message);
+      printError(getErrorMessage(err));
     }
   });
 
@@ -53,7 +63,7 @@ const validateCommand = new Command("validate")
         }
       }
     } catch (err) {
-      printError((err as Error).message);
+      printError(getErrorMessage(err));
     }
   });
 
@@ -65,9 +75,10 @@ const estimateCommand = new Command("estimate")
   .option("--json", "Output as JSON")
   .action(async opts => {
     try {
+      const batch = parsePositiveInt(String(opts.batch ?? "1"), "--batch");
       const data = await get("/api/content/estimate", {
         lipsync: opts.lipsync ? "true" : "false",
-        batch: String(opts.batch || "1"),
+        batch: String(batch),
         compare: opts.compare ? "true" : "false",
       });
 
@@ -79,7 +90,7 @@ const estimateCommand = new Command("estimate")
       console.log(`Per video: $${data.per_video_estimate_usd}`);
       console.log(`Total: $${data.total_estimate_usd}`);
     } catch (err) {
-      printError((err as Error).message);
+      printError(getErrorMessage(err));
     }
   });
 
@@ -94,13 +105,18 @@ const createCommand = new Command("create")
   .option("--json", "Output as JSON")
   .action(async opts => {
     try {
+      const batch = parsePositiveInt(String(opts.batch ?? "1"), "--batch");
+      if (!ALLOWED_CAPTION_LENGTHS.has(opts.captionLength)) {
+        throw new Error("--caption-length must be one of: short, medium, long");
+      }
+
       const data = await post("/api/content/create", {
         artist_account_id: opts.artist,
         template: opts.template,
         lipsync: !!opts.lipsync,
         caption_length: opts.captionLength,
         upscale: !!opts.upscale,
-        batch: parseInt(opts.batch, 10),
+        batch,
       });
 
       if (opts.json) {
@@ -108,7 +124,13 @@ const createCommand = new Command("create")
         return;
       }
 
-      const runIds = data.runIds as string[];
+      const runIds = Array.isArray(data.runIds)
+        ? data.runIds.filter((id): id is string => typeof id === "string")
+        : [];
+      if (runIds.length === 0) {
+        throw new Error("Response did not include any run IDs");
+      }
+
       if (runIds.length === 1) {
         console.log(`Run started: ${runIds[0]}`);
       } else {
@@ -119,7 +141,7 @@ const createCommand = new Command("create")
       }
       console.log("Use `recoup tasks status --run <runId>` to check progress.");
     } catch (err) {
-      printError((err as Error).message);
+      printError(getErrorMessage(err));
     }
   });
 
@@ -127,4 +149,3 @@ contentCommand.addCommand(templatesCommand);
 contentCommand.addCommand(validateCommand);
 contentCommand.addCommand(estimateCommand);
 contentCommand.addCommand(createCommand);
-

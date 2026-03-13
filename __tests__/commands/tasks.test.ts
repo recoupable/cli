@@ -82,4 +82,13 @@ describe("tasks command", () => {
     expect(errorSpy).toHaveBeenCalledWith("Error: Request failed");
     expect(exitSpy).toHaveBeenCalledWith(1);
   });
+
+  it("handles non-Error thrown values gracefully", async () => {
+    vi.mocked(get).mockRejectedValue("plain string error");
+
+    await tasksCommand.parseAsync(["status", "--run", "run_abc123"], { from: "user" });
+
+    expect(errorSpy).toHaveBeenCalledWith("Error: plain string error");
+    expect(exitSpy).toHaveBeenCalledWith(1);
+  });
 });

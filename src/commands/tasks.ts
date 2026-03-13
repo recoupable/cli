@@ -1,6 +1,6 @@
 import { Command } from "commander";
 import { get } from "../client.js";
-import { printError, printJson } from "../output.js";
+import { getErrorMessage, printError, printJson } from "../output.js";
 
 export const tasksCommand = new Command("tasks")
   .description("Check the status of background task runs");
@@ -33,7 +33,7 @@ const statusCommand = new Command("status")
         console.log(`Video URL: ${video.signedUrl}`);
       }
     } catch (err) {
-      printError((err as Error).message);
+      printError(getErrorMessage(err));
     }
   });
 

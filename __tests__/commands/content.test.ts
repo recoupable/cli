@@ -94,27 +94,6 @@ describe("content command", () => {
     expect(logSpy).toHaveBeenCalledWith(`Run started: run_abc123`);
   });
 
-  it("creates content run with custom flags", async () => {
-    vi.mocked(post).mockResolvedValue({
-      runId: "run_xyz789",
-      status: "triggered",
-    });
-
-    await contentCommand.parseAsync(
-      ["create", "--artist", "test-artist", "--caption-length", "long", "--upscale", "--batch", "3"],
-      { from: "user" },
-    );
-
-    expect(post).toHaveBeenCalledWith("/api/content/create", {
-      artist_account_id: "test-artist",
-      template: "artist-caption-bedroom",
-      lipsync: false,
-      caption_length: "long",
-      upscale: true,
-      batch: 3,
-    });
-  });
-
   it("shows tasks status hint after create", async () => {
     vi.mocked(post).mockResolvedValue({
       runIds: ["run_abc123"],
@@ -131,6 +110,15 @@ describe("content command", () => {
     );
   });
 
+  it("handles non-Error thrown values gracefully", async () => {
+    vi.mocked(get).mockRejectedValue("plain string error");
+
+    await contentCommand.parseAsync(["templates"], { from: "user" });
+
+    expect(errorSpy).toHaveBeenCalledWith("Error: plain string error");
+    expect(exitSpy).toHaveBeenCalledWith(1);
+  });
+
   it("prints error when API call fails", async () => {
     vi.mocked(get).mockRejectedValue(new Error("Request failed"));
 
@@ -138,6 +126,66 @@ describe("content command", () => {
 
     expect(errorSpy).toHaveBeenCalledWith("Error: Request failed");
     expect(exitSpy).toHaveBeenCalledWith(1);
+  });
+
+  it("errors when --batch is not a positive integer", async () => {
+    await contentCommand.parseAsync(
+      ["create", "--artist", "test-artist", "--batch", "abc"],
+      { from: "user" },
+    );
+
+    expect(errorSpy).toHaveBeenCalledWith("Error: --batch must be a positive integer");
+    expect(exitSpy).toHaveBeenCalledWith(1);
+  });
+
+  it("errors when --caption-length is invalid", async () => {
+    await contentCommand.parseAsync(
+      ["create", "--artist", "test-artist", "--caption-length", "huge"],
+      { from: "user" },
+    );
+
+    expect(errorSpy).toHaveBeenCalledWith(
+      "Error: --caption-length must be one of: short, medium, long",
+    );
+    expect(exitSpy).toHaveBeenCalledWith(1);
+  });
+
+  it("errors when API returns no runIds", async () => {
+    vi.mocked(post).mockResolvedValue({
+      status: "error",
+    });
+
+    await contentCommand.parseAsync(
+      ["create", "--artist", "test-artist"],
+      { from: "user" },
+    );
+
+    expect(errorSpy).toHaveBeenCalledWith(
+      "Error: Response did not include any run IDs",
+    );
+    expect(exitSpy).toHaveBeenCalledWith(1);
+  });
+
+  it("creates content run with batch flag and shows batch output", async () => {
+    vi.mocked(post).mockResolvedValue({
+      runIds: ["run_1", "run_2", "run_3"],
+      status: "triggered",
+    });
+
+    await contentCommand.parseAsync(
+      ["create", "--artist", "test-artist", "--caption-length", "long", "--upscale", "--batch", "3"],
+      { from: "user" },
+    );
+
+    expect(post).toHaveBeenCalledWith("/api/content/create", {
+      artist_account_id: "test-artist",
+      template: "artist-caption-bedroom",
+      lipsync: false,
+      caption_length: "long",
+      upscale: true,
+      batch: 3,
+    });
+    expect(logSpy).toHaveBeenCalledWith("Batch started: 3 videos");
   });
 });
 
