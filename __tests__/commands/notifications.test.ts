@@ -1,12 +1,12 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
+import { notificationsCommand } from "../../src/commands/notifications.js";
+import { post } from "../../src/client.js";
+
 vi.mock("../../src/client.js", () => ({
   get: vi.fn(),
   post: vi.fn(),
 }));
-
-import { notificationsCommand } from "../../src/commands/notifications.js";
-import { post } from "../../src/client.js";
 
 let logSpy: ReturnType<typeof vi.spyOn>;
 let errorSpy: ReturnType<typeof vi.spyOn>;
@@ -15,9 +15,7 @@ let exitSpy: ReturnType<typeof vi.spyOn>;
 beforeEach(() => {
   logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
   errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-  exitSpy = vi
-    .spyOn(process, "exit")
-    .mockImplementation(() => undefined as never);
+  exitSpy = vi.spyOn(process, "exit").mockImplementation(() => undefined as never);
 });
 
 afterEach(() => {
@@ -32,10 +30,9 @@ describe("notifications command", () => {
       id: "email-123",
     });
 
-    await notificationsCommand.parseAsync(
-      ["--subject", "Test Subject", "--text", "Hello world"],
-      { from: "user" },
-    );
+    await notificationsCommand.parseAsync(["--subject", "Test Subject", "--text", "Hello world"], {
+      from: "user",
+    });
 
     expect(post).toHaveBeenCalledWith("/api/notifications", {
       subject: "Test Subject",
@@ -70,16 +67,7 @@ describe("notifications command", () => {
     });
 
     await notificationsCommand.parseAsync(
-      [
-        "--subject",
-        "Update",
-        "--text",
-        "Hello",
-        "--cc",
-        "cc@example.com",
-        "--room-id",
-        "room-abc",
-      ],
+      ["--subject", "Update", "--text", "Hello", "--cc", "cc@example.com", "--room-id", "room-abc"],
       { from: "user" },
     );
 
@@ -99,14 +87,7 @@ describe("notifications command", () => {
     });
 
     await notificationsCommand.parseAsync(
-      [
-        "--subject",
-        "Update",
-        "--cc",
-        "a@example.com",
-        "--cc",
-        "b@example.com",
-      ],
+      ["--subject", "Update", "--cc", "a@example.com", "--cc", "b@example.com"],
       { from: "user" },
     );
 
@@ -124,14 +105,9 @@ describe("notifications command", () => {
     };
     vi.mocked(post).mockResolvedValue(response);
 
-    await notificationsCommand.parseAsync(
-      ["--subject", "Test", "--json"],
-      { from: "user" },
-    );
+    await notificationsCommand.parseAsync(["--subject", "Test", "--json"], { from: "user" });
 
-    expect(logSpy).toHaveBeenCalledWith(
-      JSON.stringify(response, null, 2),
-    );
+    expect(logSpy).toHaveBeenCalledWith(JSON.stringify(response, null, 2));
   });
 
   it("passes account_id when --account flag is provided", async () => {
@@ -167,10 +143,7 @@ describe("notifications command", () => {
       id: "email-no-account",
     });
 
-    await notificationsCommand.parseAsync(
-      ["--subject", "Test"],
-      { from: "user" },
-    );
+    await notificationsCommand.parseAsync(["--subject", "Test"], { from: "user" });
 
     expect(post).toHaveBeenCalledWith("/api/notifications", {
       subject: "Test",
@@ -180,10 +153,7 @@ describe("notifications command", () => {
   it("prints error on failure", async () => {
     vi.mocked(post).mockRejectedValue(new Error("No email address found"));
 
-    await notificationsCommand.parseAsync(
-      ["--subject", "Test"],
-      { from: "user" },
-    );
+    await notificationsCommand.parseAsync(["--subject", "Test"], { from: "user" });
 
     expect(errorSpy).toHaveBeenCalledWith("Error: No email address found");
     expect(exitSpy).toHaveBeenCalledWith(1);
