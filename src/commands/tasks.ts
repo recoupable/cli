@@ -1,6 +1,7 @@
 import { Command } from "commander";
 import { get } from "../client.js";
-import { getErrorMessage, printError, printJson } from "../output.js";
+import { getErrorMessage } from "../getErrorMessage.js";
+import { printError, printJson } from "../output.js";
 
 export const tasksCommand = new Command("tasks")
   .description("Check the status of background task runs");

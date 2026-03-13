@@ -1,6 +1,7 @@
 import { Command } from "commander";
 import { get, post } from "../client.js";
-import { getErrorMessage, printError, printJson } from "../output.js";
+import { getErrorMessage } from "../getErrorMessage.js";
+import { printError, printJson } from "../output.js";
 
 const ALLOWED_CAPTION_LENGTHS = new Set(["short", "medium", "long"]);
 

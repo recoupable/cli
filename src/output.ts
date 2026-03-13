@@ -34,10 +34,6 @@ export function printTable(
   }
 }
 
-export function getErrorMessage(err: unknown): string {
-  return err instanceof Error ? err.message : String(err);
-}
-
 export function printError(message: string): void {
   console.error(`Error: ${message}`);
   process.exit(1);
