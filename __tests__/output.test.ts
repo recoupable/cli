@@ -16,9 +16,7 @@ afterEach(() => {
 describe("printJson", () => {
   it("prints formatted JSON", () => {
     printJson({ foo: "bar", count: 42 });
-    expect(logSpy).toHaveBeenCalledWith(
-      JSON.stringify({ foo: "bar", count: 42 }, null, 2),
-    );
+    expect(logSpy).toHaveBeenCalledWith(JSON.stringify({ foo: "bar", count: 42 }, null, 2));
   });
 });
 
@@ -62,9 +60,7 @@ describe("printTable", () => {
 
 describe("printError", () => {
   it("prints error to stderr and exits", () => {
-    const exitSpy = vi
-      .spyOn(process, "exit")
-      .mockImplementation(() => undefined as never);
+    const exitSpy = vi.spyOn(process, "exit").mockImplementation(() => undefined as never);
 
     printError("something failed");
 
