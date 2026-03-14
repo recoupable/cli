@@ -5,7 +5,7 @@ import { printJson, printTable, printError } from "../output.js";
 const listCommand = new Command("list")
   .description("List chats for the current account")
   .option("--json", "Output as JSON")
-  .action(async (opts) => {
+  .action(async opts => {
     try {
       const data = await get("/api/chats");
       const chats = (data.chats as Record<string, unknown>[]) || [];
@@ -29,7 +29,7 @@ const createCommand = new Command("create")
   .option("--name <topic>", "Chat topic")
   .option("--artist <id>", "Artist ID")
   .option("--json", "Output as JSON")
-  .action(async (opts) => {
+  .action(async opts => {
     try {
       const body: Record<string, unknown> = {};
       if (opts.name) body.topic = opts.name;
