@@ -5,7 +5,7 @@ import { printJson, printTable, printError } from "../output.js";
 const listCommand = new Command("list")
   .description("List sandboxes for the current account")
   .option("--json", "Output as JSON")
-  .action(async (opts) => {
+  .action(async opts => {
     try {
       const data = await get("/api/sandboxes");
       const sandboxes = (data.sandboxes as Record<string, unknown>[]) || [];
@@ -28,7 +28,7 @@ const createCommand = new Command("create")
   .description("Create a new sandbox")
   .option("--command <cmd>", "Command to run in sandbox")
   .option("--json", "Output as JSON")
-  .action(async (opts) => {
+  .action(async opts => {
     try {
       const body: Record<string, unknown> = {};
       if (opts.command) body.command = opts.command;
