@@ -16,10 +16,7 @@ const { version } = JSON.parse(readFileSync(pkgPath, "utf-8"));
 
 const program = new Command();
 
-program
-  .name("recoup")
-  .description("Recoup platform CLI")
-  .version(version);
+program.name("recoup").description("Recoup platform CLI").version(version);
 
 program.addCommand(whoamiCommand);
 program.addCommand(artistsCommand);

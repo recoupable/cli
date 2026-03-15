@@ -7,7 +7,7 @@ const listCommand = new Command("list")
   .option("--json", "Output as JSON")
   .option("--org <orgId>", "Filter by organization ID")
   .option("--account <accountId>", "Filter by account ID")
-  .action(async (opts) => {
+  .action(async opts => {
     try {
       const params: Record<string, string> = {};
       if (opts.org) params.org_id = opts.org;

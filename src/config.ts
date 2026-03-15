@@ -1,3 +1,6 @@
+/**
+ *
+ */
 export function getApiKey(): string {
   const key = process.env.RECOUP_API_KEY;
   if (!key) {
@@ -10,8 +13,9 @@ export function getApiKey(): string {
   return key;
 }
 
+/**
+ *
+ */
 export function getBaseUrl(): string {
-  return (
-    process.env.RECOUP_API_URL || "https://recoup-api.vercel.app"
-  );
+  return process.env.RECOUP_API_URL || "https://recoup-api.vercel.app";
 }
