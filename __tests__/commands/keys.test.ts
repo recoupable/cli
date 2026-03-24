@@ -92,6 +92,17 @@ describe("keys create", () => {
     expect(logSpy).toHaveBeenCalledWith(JSON.stringify(response, null, 2));
   });
 
+  it("prints error when key is missing from response", async () => {
+    vi.mocked(post).mockResolvedValue({});
+
+    await keysCommand.parseAsync(["create", "--name", "My Key"], {
+      from: "user",
+    });
+
+    expect(errorSpy).toHaveBeenCalledWith("Error: No key returned from API");
+    expect(exitSpy).toHaveBeenCalledWith(1);
+  });
+
   it("prints error when --name is missing", async () => {
     await keysCommand.parseAsync(["create"], { from: "user" });
 

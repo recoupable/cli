@@ -24,7 +24,11 @@ const createCommand = new Command("create")
         printJson(data);
       } else {
         const account = data.data as Record<string, unknown> | undefined;
-        console.log(account?.account_id);
+        if (!account || !account.account_id) {
+          printError("Account ID not found in API response");
+          return;
+        }
+        console.log(account.account_id);
       }
     } catch (err) {
       printError((err as Error).message);

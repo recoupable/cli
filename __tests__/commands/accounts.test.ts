@@ -81,6 +81,20 @@ describe("accounts create", () => {
     expect(exitSpy).toHaveBeenCalledWith(1);
   });
 
+  it("prints error when account_id is missing from response", async () => {
+    vi.mocked(post).mockResolvedValue({ data: {} });
+
+    await accountsCommand.parseAsync(
+      ["create", "--email", "test@example.com"],
+      { from: "user" },
+    );
+
+    expect(errorSpy).toHaveBeenCalledWith(
+      "Error: Account ID not found in API response",
+    );
+    expect(exitSpy).toHaveBeenCalledWith(1);
+  });
+
   it("prints error on API failure", async () => {
     vi.mocked(post).mockRejectedValue(new Error("Request failed"));
 

@@ -41,6 +41,10 @@ const createCommand = new Command("create")
       if (opts.json) {
         printJson(data);
       } else {
+        if (!data.key) {
+          printError("No key returned from API");
+          return;
+        }
         console.log(data.key);
       }
     } catch (err) {
@@ -64,7 +68,7 @@ const deleteCommand = new Command("delete")
       if (opts.json) {
         printJson(data);
       } else {
-        console.log(data.message);
+        console.log(data.message ?? data.error ?? JSON.stringify(data));
       }
     } catch (err) {
       printError((err as Error).message);
