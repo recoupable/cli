@@ -9,10 +9,12 @@ const analyzeCommand = new Command("analyze")
   .option("--audio <url>", "Public URL to an audio file (MP3, WAV, FLAC)")
   .option("--max-tokens <n>", "Max tokens to generate (default 512)", parseInt)
   .option("--json", "Output as JSON")
-  .action(async (opts) => {
+  .action(async opts => {
     try {
       if (!opts.prompt && !opts.preset) {
-        console.error("Error: Provide --prompt <text> or use --preset <name>. Run 'recoup songs presets' to see available presets.");
+        console.error(
+          "Error: Provide --prompt <text> or use --preset <name>. Run 'recoup songs presets' to see available presets.",
+        );
         process.exit(1);
       }
 
@@ -57,7 +59,7 @@ const analyzeCommand = new Command("analyze")
 const presetsCommand = new Command("presets")
   .description("List available analysis presets")
   .option("--json", "Output as JSON")
-  .action(async (opts) => {
+  .action(async opts => {
     try {
       const data = await get("/api/songs/analyze/presets");
       const presets = (data.presets as Record<string, unknown>[]) || [];

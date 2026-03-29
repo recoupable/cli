@@ -3,15 +3,22 @@ import { post } from "../client.js";
 import { printJson, printError } from "../output.js";
 
 export const notificationsCommand = new Command("notifications")
-  .description("Send an email to the account owner. The recipient is automatically resolved from your API key — no --to flag needed. Only --subject is required.")
+  .description(
+    "Send an email to the account owner. The recipient is automatically resolved from your API key — no --to flag needed. Only --subject is required.",
+  )
   .requiredOption("--subject <text>", "Email subject line")
   .option("--text <body>", "Plain text or Markdown body")
   .option("--html <body>", "Raw HTML body (takes precedence over --text)")
-  .option("--cc <email>", "CC recipient (repeatable)", (val: string, prev: string[]) => prev.concat(val), [] as string[])
+  .option(
+    "--cc <email>",
+    "CC recipient (repeatable)",
+    (val: string, prev: string[]) => prev.concat(val),
+    [] as string[],
+  )
   .option("--room-id <id>", "Room ID for chat link in footer")
   .option("--account <accountId>", "Send to a specific account (org keys only)")
   .option("--json", "Output as JSON")
-  .action(async (opts) => {
+  .action(async opts => {
     try {
       const body: Record<string, unknown> = {
         subject: opts.subject,

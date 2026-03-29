@@ -4,8 +4,9 @@ import { validateCommand } from "./content/validateCommand.js";
 import { estimateCommand } from "./content/estimateCommand.js";
 import { createCommand } from "./content/createCommand.js";
 
-export const contentCommand = new Command("content")
-  .description("Content-creation pipeline commands");
+export const contentCommand = new Command("content").description(
+  "Content-creation pipeline commands",
+);
 
 contentCommand.addCommand(templatesCommand);
 contentCommand.addCommand(validateCommand);

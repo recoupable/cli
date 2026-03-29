@@ -1,12 +1,12 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
+import { songsCommand } from "../../src/commands/songs.js";
+import { get, post } from "../../src/client.js";
+
 vi.mock("../../src/client.js", () => ({
   get: vi.fn(),
   post: vi.fn(),
 }));
-
-import { songsCommand } from "../../src/commands/songs.js";
-import { get, post } from "../../src/client.js";
 
 let logSpy: ReturnType<typeof vi.spyOn>;
 let errorSpy: ReturnType<typeof vi.spyOn>;
@@ -15,9 +15,7 @@ let exitSpy: ReturnType<typeof vi.spyOn>;
 beforeEach(() => {
   logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
   errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-  exitSpy = vi
-    .spyOn(process, "exit")
-    .mockImplementation(() => undefined as never);
+  exitSpy = vi.spyOn(process, "exit").mockImplementation(() => undefined as never);
 });
 
 afterEach(() => {
@@ -47,7 +45,10 @@ describe("songs analyze", () => {
       elapsed_seconds: 8.0,
     });
 
-    await songsCommand.parseAsync(["analyze", "--preset", "catalog_metadata", "--audio", "https://example.com/song.mp3"], { from: "user" });
+    await songsCommand.parseAsync(
+      ["analyze", "--preset", "catalog_metadata", "--audio", "https://example.com/song.mp3"],
+      { from: "user" },
+    );
 
     expect(post).toHaveBeenCalledWith("/api/songs/analyze", {
       preset: "catalog_metadata",
@@ -62,7 +63,9 @@ describe("songs analyze", () => {
       elapsed_seconds: 2.5,
     });
 
-    await songsCommand.parseAsync(["analyze", "--prompt", "Describe this track."], { from: "user" });
+    await songsCommand.parseAsync(["analyze", "--prompt", "Describe this track."], {
+      from: "user",
+    });
 
     expect(logSpy).toHaveBeenCalledWith("This is a jazz piece in Bb major.");
   });
@@ -74,11 +77,12 @@ describe("songs analyze", () => {
       elapsed_seconds: 10.0,
     });
 
-    await songsCommand.parseAsync(["analyze", "--preset", "catalog_metadata", "--audio", "https://example.com/song.mp3"], { from: "user" });
-
-    expect(logSpy).toHaveBeenCalledWith(
-      JSON.stringify({ genre: "pop", tempo_bpm: 96 }, null, 2),
+    await songsCommand.parseAsync(
+      ["analyze", "--preset", "catalog_metadata", "--audio", "https://example.com/song.mp3"],
+      { from: "user" },
     );
+
+    expect(logSpy).toHaveBeenCalledWith(JSON.stringify({ genre: "pop", tempo_bpm: 96 }, null, 2));
   });
 
   it("prints full JSON with --json flag", async () => {
@@ -89,7 +93,9 @@ describe("songs analyze", () => {
     };
     vi.mocked(post).mockResolvedValue(data);
 
-    await songsCommand.parseAsync(["analyze", "--prompt", "Describe this.", "--json"], { from: "user" });
+    await songsCommand.parseAsync(["analyze", "--prompt", "Describe this.", "--json"], {
+      from: "user",
+    });
 
     expect(logSpy).toHaveBeenCalledWith(JSON.stringify(data, null, 2));
   });
@@ -101,7 +107,10 @@ describe("songs analyze", () => {
       elapsed_seconds: 10.0,
     });
 
-    await songsCommand.parseAsync(["analyze", "--prompt", "Describe this.", "--audio", "https://example.com/song.mp3"], { from: "user" });
+    await songsCommand.parseAsync(
+      ["analyze", "--prompt", "Describe this.", "--audio", "https://example.com/song.mp3"],
+      { from: "user" },
+    );
 
     expect(post).toHaveBeenCalledWith("/api/songs/analyze", {
       prompt: "Describe this.",
@@ -131,8 +140,18 @@ describe("songs presets", () => {
     vi.mocked(get).mockResolvedValue({
       status: "success",
       presets: [
-        { name: "catalog_metadata", description: "Catalog enrichment", requiresAudio: true, responseFormat: "json" },
-        { name: "mood_tags", description: "Mood tags", requiresAudio: true, responseFormat: "json" },
+        {
+          name: "catalog_metadata",
+          description: "Catalog enrichment",
+          requiresAudio: true,
+          responseFormat: "json",
+        },
+        {
+          name: "mood_tags",
+          description: "Mood tags",
+          requiresAudio: true,
+          responseFormat: "json",
+        },
       ],
     });
 
@@ -143,9 +162,7 @@ describe("songs presets", () => {
   });
 
   it("prints JSON with --json flag", async () => {
-    const presets = [
-      { name: "catalog_metadata", description: "Catalog enrichment" },
-    ];
+    const presets = [{ name: "catalog_metadata", description: "Catalog enrichment" }];
     vi.mocked(get).mockResolvedValue({ status: "success", presets });
 
     await songsCommand.parseAsync(["presets", "--json"], { from: "user" });
