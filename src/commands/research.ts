@@ -2,20 +2,29 @@ import { Command } from "commander";
 import { get, post } from "../client.js";
 import { printJson, printTable, printError } from "../output.js";
 
+const EXAMPLES = `
+Examples:
+  recoup research "Drake"
+  recoup research "Drake" --json
+  recoup research cities "Drake"
+  recoup research metrics "Drake" --source spotify
+  recoup research similar "Drake" --audience high --genre high
+  recoup research web "Drake brand partnerships"
+  recoup research report "Tell me about Drake"
+  recoup research people "A&R reps Atlantic Records"
+  recoup research extract "https://en.wikipedia.org/wiki/Drake_(musician)"
+  recoup research enrich "Drake" --schema '{"properties":{"label":{"type":"string"}}}'`;
+
 const searchCommand = new Command("research")
   .description("Music industry research — streaming metrics, audience, playlists, competitive analysis, web intelligence")
   .argument("[query]", "Artist name to search for")
   .option("--json", "Output as JSON")
   .option("--limit <n>", "Max results", "10")
   .option("--type <type>", "Entity type: artists, tracks, albums", "artists")
+  .addHelpText("after", EXAMPLES)
   .action(async (query, opts) => {
     if (!query) {
-      console.log("Usage: recoup research <artist-name>");
-      console.log("       recoup research <subcommand> [options]");
-      console.log("\nSubcommands: profile, metrics, audience, cities, similar, urls,");
-      console.log("  instagram-posts, playlists, albums, tracks, career, insights,");
-      console.log("  lookup, track, playlist, curator, discover, genres, festivals,");
-      console.log("  web, deep, people, extract, enrich");
+      searchCommand.help();
       return;
     }
     try {
@@ -51,6 +60,14 @@ const metricsCommand = new Command("metrics")
   .argument("<artist>", "Artist name or Recoup ID")
   .requiredOption("--source <source>", "Platform: spotify, instagram, tiktok, youtube_channel, etc.")
   .option("--json", "Output as JSON")
+  .addHelpText("after", `
+Examples:
+  recoup research metrics "Drake" --source spotify
+  recoup research metrics "Drake" --source tiktok --json
+  recoup research metrics "Drake" --source youtube_channel
+
+Valid sources: spotify, instagram, tiktok, twitter, facebook, youtube_channel,
+  youtube_artist, soundcloud, deezer, twitch, line, melon, wikipedia, bandsintown`)
   .action(async (artist, opts) => {
     try {
       const data = await get("/api/research/metrics", { artist, source: opts.source });
@@ -98,6 +115,11 @@ const similarCommand = new Command("similar")
   .option("--musicality <level>", "high, medium, low")
   .option("--limit <n>", "Max results", "10")
   .option("--json", "Output as JSON")
+  .addHelpText("after", `
+Examples:
+  recoup research similar "Drake"
+  recoup research similar "Drake" --audience high --genre high --limit 20
+  recoup research similar "Drake" --musicality high --json`)
   .action(async (artist, opts) => {
     try {
       const params: Record<string, string> = { artist, limit: opts.limit };
@@ -151,6 +173,12 @@ const playlistsCommand = new Command("playlists")
   .option("--sort <field>", "Sort field (e.g., followers)")
   .option("--limit <n>", "Max results", "20")
   .option("--json", "Output as JSON")
+  .addHelpText("after", `
+Examples:
+  recoup research playlists "Drake"
+  recoup research playlists "Drake" --editorial --sort followers
+  recoup research playlists "Drake" --status past --since 2025-01-01
+  recoup research playlists "Drake" --platform applemusic --json`)
   .action(async (artist, opts) => {
     try {
       const params: Record<string, string> = { artist, platform: opts.platform, status: opts.status, limit: opts.limit };
@@ -283,6 +311,11 @@ const discoverCommand = new Command("discover")
   .option("--sort <field>", "Sort field")
   .option("--limit <n>", "Max results", "20")
   .option("--json", "Output as JSON")
+  .addHelpText("after", `
+Examples:
+  recoup research discover --country US --spotify-listeners 100000,500000
+  recoup research discover --genre 86 --sort weekly_diff.sp_monthly_listeners
+  recoup research discover --tiktok-followers 1000000,10000000 --spotify-listeners 0,100000`)
   .action(async (opts) => {
     try {
       const params: Record<string, string> = { limit: opts.limit };
@@ -428,6 +461,10 @@ const enrichCommand = new Command("enrich")
   .requiredOption("--schema <json>", "JSON schema for output fields")
   .option("--processor <tier>", "base (fast), core (balanced), ultra (deep)", "base")
   .option("--json", "Output as JSON")
+  .addHelpText("after", `
+Examples:
+  recoup research enrich "Kaash Paige R&B artist" --schema '{"properties":{"real_name":{"type":"string"},"label":{"type":"string"},"hometown":{"type":"string"}}}'
+  recoup research enrich "Atlantic Records" --schema '{"properties":{"ceo":{"type":"string"},"artists":{"type":"array","items":{"type":"string"}}}}' --processor core`)
   .action(async (input, opts) => {
     try {
       let schema: Record<string, unknown>;
