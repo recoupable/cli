@@ -44,6 +44,10 @@ const profileCommand = new Command("profile")
   .description("Full artist profile — bio, genres, social URLs, label")
   .argument("<artist>", "Artist name or Recoup ID")
   .option("--json", "Output as JSON")
+  .addHelpText("after", `
+Examples:
+  recoup research profile "Drake"
+  recoup research profile "Drake" --json`)
   .action(async (artist, opts) => {
     try {
       const data = await get("/api/research/profile", { artist });
@@ -81,6 +85,11 @@ const audienceCommand = new Command("audience")
   .argument("<artist>", "Artist name or Recoup ID")
   .option("--platform <platform>", "instagram (default), tiktok, youtube", "instagram")
   .option("--json", "Output as JSON")
+  .addHelpText("after", `
+Examples:
+  recoup research audience "Drake"
+  recoup research audience "Drake" --platform tiktok
+  recoup research audience "Drake" --platform youtube --json`)
   .action(async (artist, opts) => {
     try {
       const data = await get("/api/research/audience", { artist, platform: opts.platform });
@@ -93,6 +102,10 @@ const citiesCommand = new Command("cities")
   .description("Top cities by listener concentration")
   .argument("<artist>", "Artist name or Recoup ID")
   .option("--json", "Output as JSON")
+  .addHelpText("after", `
+Examples:
+  recoup research cities "Drake"
+  recoup research cities "Drake" --json`)
   .action(async (artist, opts) => {
     try {
       const data = await get("/api/research/cities", { artist });
@@ -143,6 +156,10 @@ const urlsCommand = new Command("urls")
   .description("All social and streaming links")
   .argument("<artist>", "Artist name or Recoup ID")
   .option("--json", "Output as JSON")
+  .addHelpText("after", `
+Examples:
+  recoup research urls "Drake"
+  recoup research urls "Drake" --json`)
   .action(async (artist, opts) => {
     try {
       const data = await get("/api/research/urls", { artist });
@@ -155,6 +172,10 @@ const instagramPostsCommand = new Command("instagram-posts")
   .description("Top Instagram posts and reels by engagement")
   .argument("<artist>", "Artist name or Recoup ID")
   .option("--json", "Output as JSON")
+  .addHelpText("after", `
+Examples:
+  recoup research instagram-posts "Drake"
+  recoup research instagram-posts "Drake" --json`)
   .action(async (artist, opts) => {
     try {
       const data = await get("/api/research/instagram-posts", { artist });
@@ -196,6 +217,10 @@ const albumsCommand = new Command("albums")
   .description("Full discography")
   .argument("<artist>", "Artist name or Recoup ID")
   .option("--json", "Output as JSON")
+  .addHelpText("after", `
+Examples:
+  recoup research albums "Drake"
+  recoup research albums "Drake" --json`)
   .action(async (artist, opts) => {
     try {
       const data = await get("/api/research/albums", { artist });
@@ -212,6 +237,10 @@ const tracksCommand = new Command("tracks")
   .description("All tracks with popularity")
   .argument("<artist>", "Artist name or Recoup ID")
   .option("--json", "Output as JSON")
+  .addHelpText("after", `
+Examples:
+  recoup research tracks "Drake"
+  recoup research tracks "Drake" --json`)
   .action(async (artist, opts) => {
     try {
       const data = await get("/api/research/tracks", { artist });
@@ -228,6 +257,10 @@ const careerCommand = new Command("career")
   .description("Career timeline and milestones")
   .argument("<artist>", "Artist name or Recoup ID")
   .option("--json", "Output as JSON")
+  .addHelpText("after", `
+Examples:
+  recoup research career "Drake"
+  recoup research career "Drake" --json`)
   .action(async (artist, opts) => {
     try {
       const data = await get("/api/research/career", { artist });
@@ -240,6 +273,10 @@ const insightsCommand = new Command("insights")
   .description("AI-generated observations and trends")
   .argument("<artist>", "Artist name or Recoup ID")
   .option("--json", "Output as JSON")
+  .addHelpText("after", `
+Examples:
+  recoup research insights "Drake"
+  recoup research insights "Drake" --json`)
   .action(async (artist, opts) => {
     try {
       const data = await get("/api/research/insights", { artist });
@@ -256,6 +293,10 @@ const lookupCommand = new Command("lookup")
   .description("Find artist by Spotify URL or platform ID")
   .argument("<url>", "Spotify URL or platform ID")
   .option("--json", "Output as JSON")
+  .addHelpText("after", `
+Examples:
+  recoup research lookup "https://open.spotify.com/artist/3TVXtAsR1Inumwj472S9r4"
+  recoup research lookup "3TVXtAsR1Inumwj472S9r4" --json`)
   .action(async (url, opts) => {
     try {
       const data = await get("/api/research/lookup", { url });
@@ -268,6 +309,10 @@ const trackCommand = new Command("track")
   .description("Track metadata by name or Spotify URL")
   .argument("<query>", "Track name or Spotify URL")
   .option("--json", "Output as JSON")
+  .addHelpText("after", `
+Examples:
+  recoup research track "God's Plan"
+  recoup research track "https://open.spotify.com/track/..." --json`)
   .action(async (query, opts) => {
     try {
       const data = await get("/api/research/track", { q: query });
@@ -281,6 +326,10 @@ const playlistCommand = new Command("playlist")
   .argument("<platform>", "spotify, applemusic, deezer, amazon, youtube")
   .argument("<id>", "Playlist ID")
   .option("--json", "Output as JSON")
+  .addHelpText("after", `
+Examples:
+  recoup research playlist spotify 1645080
+  recoup research playlist spotify 1645080 --json`)
   .action(async (platform, id, opts) => {
     try {
       const data = await get("/api/research/playlist", { platform, id });
@@ -294,6 +343,10 @@ const curatorCommand = new Command("curator")
   .argument("<platform>", "spotify, applemusic, deezer, amazon, youtube")
   .argument("<id>", "Curator ID")
   .option("--json", "Output as JSON")
+  .addHelpText("after", `
+Examples:
+  recoup research curator spotify 1
+  recoup research curator spotify 1 --json`)
   .action(async (platform, id, opts) => {
     try {
       const data = await get("/api/research/curator", { platform, id });
@@ -341,6 +394,10 @@ Examples:
 const genresCommand = new Command("genres")
   .description("List all genre IDs and names")
   .option("--json", "Output as JSON")
+  .addHelpText("after", `
+Examples:
+  recoup research genres
+  recoup research genres --json`)
   .action(async (opts) => {
     try {
       const data = await get("/api/research/genres");
@@ -356,6 +413,10 @@ const genresCommand = new Command("genres")
 const festivalsCommand = new Command("festivals")
   .description("List music festivals")
   .option("--json", "Output as JSON")
+  .addHelpText("after", `
+Examples:
+  recoup research festivals
+  recoup research festivals --json`)
   .action(async (opts) => {
     try {
       const data = await get("/api/research/festivals");
@@ -375,6 +436,11 @@ const webCommand = new Command("web")
   .option("--max-results <n>", "Max results", "10")
   .option("--country <code>", "ISO country code")
   .option("--json", "Output as JSON")
+  .addHelpText("after", `
+Examples:
+  recoup research web "Drake brand partnerships sync licensing"
+  recoup research web "Kaash Paige fan community" --max-results 5
+  recoup research web "indie R&B trends 2026" --json`)
   .action(async (query, opts) => {
     try {
       const body: Record<string, unknown> = { query, max_results: parseInt(opts.maxResults) };
@@ -395,6 +461,10 @@ const deepCommand = new Command("report")
   .description("Deep research report with citations")
   .argument("<query>", "Research query")
   .option("--json", "Output as JSON")
+  .addHelpText("after", `
+Examples:
+  recoup research report "Tell me everything about Kaash Paige"
+  recoup research report "Competitive landscape for independent R&B artists in 2026" --json`)
   .action(async (query, opts) => {
     try {
       const data = await post("/api/research/deep", { query });
@@ -413,6 +483,11 @@ const peopleCommand = new Command("people")
   .argument("<query>", "Search query (e.g., 'A&R reps at Atlantic Records')")
   .option("--num-results <n>", "Max results", "10")
   .option("--json", "Output as JSON")
+  .addHelpText("after", `
+Examples:
+  recoup research people "A&R reps at Atlantic Records"
+  recoup research people "music managers in Los Angeles R&B"
+  recoup research people "Kaash Paige manager" --json`)
   .action(async (query, opts) => {
     try {
       const data = await post("/api/research/people", { query, num_results: parseInt(opts.numResults) });
@@ -433,6 +508,11 @@ const extractCommand = new Command("extract")
   .option("--objective <text>", "What information to focus on")
   .option("--full-content", "Return full page instead of excerpts")
   .option("--json", "Output as JSON")
+  .addHelpText("after", `
+Examples:
+  recoup research extract "https://en.wikipedia.org/wiki/Drake_(musician)"
+  recoup research extract "https://example.com/page" --objective "funding and investors"
+  recoup research extract "https://a.com" "https://b.com" --full-content --json`)
   .action(async (urls, opts) => {
     try {
       const body: Record<string, unknown> = { urls };
