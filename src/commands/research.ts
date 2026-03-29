@@ -555,6 +555,107 @@ Examples:
     } catch (err) { printError((err as Error).message); }
   });
 
+const milestonesCommand = new Command("milestones")
+  .description("Artist activity feed — playlist adds, chart entries, notable events")
+  .argument("<artist>", "Artist name or Recoup ID")
+  .option("--json", "Output as JSON")
+  .addHelpText("after", `
+Examples:
+  recoup research milestones "Drake"
+  recoup research milestones "Drake" --json`)
+  .action(async (artist, opts) => {
+    try {
+      const data = await get("/api/research/milestones", { artist });
+      const milestones = (data.milestones as Record<string, unknown>[]) || [];
+      if (opts.json) return printJson(milestones);
+      printTable(milestones, [
+        { key: "date", label: "DATE" },
+        { key: "summary", label: "EVENT" },
+        { key: "platform", label: "PLATFORM" },
+        { key: "track_name", label: "TRACK" },
+        { key: "stars", label: "STARS" },
+      ]);
+    } catch (err) { printError((err as Error).message); }
+  });
+
+const venuesCommand = new Command("venues")
+  .description("Venues the artist has performed at")
+  .argument("<artist>", "Artist name or Recoup ID")
+  .option("--json", "Output as JSON")
+  .addHelpText("after", `
+Examples:
+  recoup research venues "Drake"
+  recoup research venues "Drake" --json`)
+  .action(async (artist, opts) => {
+    try {
+      const data = await get("/api/research/venues", { artist });
+      const venues = (data.venues as Record<string, unknown>[]) || [];
+      if (opts.json) return printJson(venues);
+      printTable(venues, [
+        { key: "venue_name", label: "VENUE" },
+        { key: "venue_capacity", label: "CAPACITY" },
+        { key: "city_name", label: "CITY" },
+        { key: "country", label: "COUNTRY" },
+      ]);
+    } catch (err) { printError((err as Error).message); }
+  });
+
+const rankCommand = new Command("rank")
+  .description("Global artist ranking")
+  .argument("<artist>", "Artist name or Recoup ID")
+  .option("--json", "Output as JSON")
+  .addHelpText("after", `
+Examples:
+  recoup research rank "Drake"
+  recoup research rank "Drake" --json`)
+  .action(async (artist, opts) => {
+    try {
+      const data = await get("/api/research/rank", { artist });
+      if (opts.json) return printJson(data);
+      console.log(`Global rank: ${data.rank ?? "N/A"}`);
+    } catch (err) { printError((err as Error).message); }
+  });
+
+const chartsCommand = new Command("charts")
+  .description("Global chart positions by platform")
+  .requiredOption("--platform <name>", "Chart platform: spotify, applemusic, tiktok, youtube, itunes, shazam")
+  .option("--country <code>", "ISO country code (US, GB, DE)")
+  .option("--interval <interval>", "Time interval (daily, weekly)")
+  .option("--type <type>", "Chart type (varies by platform)")
+  .option("--json", "Output as JSON")
+  .addHelpText("after", `
+Examples:
+  recoup research charts --platform spotify
+  recoup research charts --platform spotify --country US --json
+  recoup research charts --platform applemusic --country GB --interval weekly`)
+  .action(async (opts) => {
+    try {
+      const params: Record<string, string> = { platform: opts.platform };
+      if (opts.country) params.country = opts.country;
+      if (opts.interval) params.interval = opts.interval;
+      if (opts.type) params.type = opts.type;
+      const data = await get("/api/research/charts", params);
+      if (opts.json) return printJson(data);
+      printJson(data);
+    } catch (err) { printError((err as Error).message); }
+  });
+
+const radioCommand = new Command("radio")
+  .description("List radio stations")
+  .option("--json", "Output as JSON")
+  .addHelpText("after", `
+Examples:
+  recoup research radio
+  recoup research radio --json`)
+  .action(async (opts) => {
+    try {
+      const data = await get("/api/research/radio");
+      const stations = (data.stations as Record<string, unknown>[]) || [];
+      if (opts.json) return printJson(stations);
+      printJson(stations);
+    } catch (err) { printError((err as Error).message); }
+  });
+
 // Register all subcommands
 searchCommand.addCommand(profileCommand);
 searchCommand.addCommand(metricsCommand);
@@ -580,5 +681,10 @@ searchCommand.addCommand(deepCommand);
 searchCommand.addCommand(peopleCommand);
 searchCommand.addCommand(extractCommand);
 searchCommand.addCommand(enrichCommand);
+searchCommand.addCommand(milestonesCommand);
+searchCommand.addCommand(venuesCommand);
+searchCommand.addCommand(rankCommand);
+searchCommand.addCommand(chartsCommand);
+searchCommand.addCommand(radioCommand);
 
 export const researchCommand = searchCommand;
