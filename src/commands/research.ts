@@ -443,7 +443,12 @@ Examples:
   recoup research web "indie R&B trends 2026" --json`)
   .action(async (query, opts) => {
     try {
-      const body: Record<string, unknown> = { query, max_results: parseInt(opts.maxResults) };
+      const maxResults = parseInt(opts.maxResults, 10);
+      if (Number.isNaN(maxResults) || maxResults < 1) {
+        printError("--max-results must be a positive number");
+        return;
+      }
+      const body: Record<string, unknown> = { query, max_results: maxResults };
       if (opts.country) body.country = opts.country;
       const data = await post("/api/research/web", body);
       const results = (data.results as Record<string, unknown>[]) || [];
@@ -490,7 +495,12 @@ Examples:
   recoup research people "Drake manager" --json`)
   .action(async (query, opts) => {
     try {
-      const data = await post("/api/research/people", { query, num_results: parseInt(opts.numResults) });
+      const numResults = parseInt(opts.numResults, 10);
+      if (Number.isNaN(numResults) || numResults < 1) {
+        printError("--num-results must be a positive number");
+        return;
+      }
+      const data = await post("/api/research/people", { query, num_results: numResults });
       const results = (data.results as Record<string, unknown>[]) || [];
       if (opts.json) return printJson(results);
       for (const r of results) {
