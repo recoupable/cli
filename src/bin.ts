@@ -10,6 +10,7 @@ import { notificationsCommand } from "./commands/notifications.js";
 import { orgsCommand } from "./commands/orgs.js";
 import { contentCommand } from "./commands/content.js";
 import { tasksCommand } from "./commands/tasks.js";
+import { researchCommand } from "./commands/research.js";
 
 const pkgPath = join(__dirname, "..", "package.json");
 const { version } = JSON.parse(readFileSync(pkgPath, "utf-8"));
@@ -30,5 +31,6 @@ program.addCommand(sandboxesCommand);
 program.addCommand(orgsCommand);
 program.addCommand(tasksCommand);
 program.addCommand(contentCommand);
+program.addCommand(researchCommand);
 
 program.parse();
