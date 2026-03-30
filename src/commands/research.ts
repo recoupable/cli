@@ -439,7 +439,7 @@ const webCommand = new Command("web")
   .addHelpText("after", `
 Examples:
   recoup research web "Drake brand partnerships sync licensing"
-  recoup research web "Kaash Paige fan community" --max-results 5
+  recoup research web "Drake fan community" --max-results 5
   recoup research web "indie R&B trends 2026" --json`)
   .action(async (query, opts) => {
     try {
@@ -463,7 +463,7 @@ const deepCommand = new Command("report")
   .option("--json", "Output as JSON")
   .addHelpText("after", `
 Examples:
-  recoup research report "Tell me everything about Kaash Paige"
+  recoup research report "Tell me everything about Drake"
   recoup research report "Competitive landscape for independent R&B artists in 2026" --json`)
   .action(async (query, opts) => {
     try {
@@ -487,7 +487,7 @@ const peopleCommand = new Command("people")
 Examples:
   recoup research people "A&R reps at Atlantic Records"
   recoup research people "music managers in Los Angeles R&B"
-  recoup research people "Kaash Paige manager" --json`)
+  recoup research people "Drake manager" --json`)
   .action(async (query, opts) => {
     try {
       const data = await post("/api/research/people", { query, num_results: parseInt(opts.numResults) });
@@ -537,13 +537,13 @@ Examples:
 
 const enrichCommand = new Command("enrich")
   .description("Structured data enrichment from web research")
-  .argument("<input>", "What to research (e.g., 'Kaash Paige R&B artist')")
+  .argument("<input>", "What to research (e.g., 'Drake rapper')")
   .requiredOption("--schema <json>", "JSON schema for output fields")
   .option("--processor <tier>", "base (fast), core (balanced), ultra (deep)", "base")
   .option("--json", "Output as JSON")
   .addHelpText("after", `
 Examples:
-  recoup research enrich "Kaash Paige R&B artist" --schema '{"properties":{"real_name":{"type":"string"},"label":{"type":"string"},"hometown":{"type":"string"}}}'
+  recoup research enrich "Drake rapper" --schema '{"properties":{"real_name":{"type":"string"},"label":{"type":"string"},"hometown":{"type":"string"}}}'
   recoup research enrich "Atlantic Records" --schema '{"properties":{"ceo":{"type":"string"},"artists":{"type":"array","items":{"type":"string"}}}}' --processor core`)
   .action(async (input, opts) => {
     try {
