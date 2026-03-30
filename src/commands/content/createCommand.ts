@@ -14,6 +14,7 @@ export const createCommand = new Command("create")
   .option("--caption-length <length>", "Caption length: short, medium, long", "short")
   .option("--upscale", "Upscale image and video for higher quality")
   .option("--batch <count>", "Generate multiple videos in parallel", "1")
+  .option("--songs <slugs>", "Comma-separated song slugs to pick from (e.g. hiccups,adhd)")
   .option("--json", "Output as JSON")
   .action(async opts => {
     try {
@@ -22,6 +23,10 @@ export const createCommand = new Command("create")
         throw new Error("--caption-length must be one of: short, medium, long");
       }
 
+      const songs: string[] | undefined = opts.songs
+        ? (opts.songs as string).split(",").map((s: string) => s.trim()).filter(Boolean)
+        : undefined;
+
       const data = await post("/api/content/create", {
         artist_account_id: opts.artist,
         template: opts.template,
@@ -29,6 +34,7 @@ export const createCommand = new Command("create")
         caption_length: opts.captionLength,
         upscale: !!opts.upscale,
         batch,
+        ...(songs && { songs }),
       });
 
       if (opts.json) {
