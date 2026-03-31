@@ -7,10 +7,12 @@ export interface ApiResponse {
   [key: string]: unknown;
 }
 
-export async function get(
-  path: string,
-  params?: Record<string, string>,
-): Promise<ApiResponse> {
+/**
+ *
+ * @param path
+ * @param params
+ */
+export async function get(path: string, params?: Record<string, string>): Promise<ApiResponse> {
   const baseUrl = getBaseUrl();
   const url = new URL(path, baseUrl);
   if (params) {
@@ -38,10 +40,12 @@ export async function get(
   return data;
 }
 
-export async function post(
-  path: string,
-  body: Record<string, unknown>,
-): Promise<ApiResponse> {
+/**
+ *
+ * @param path
+ * @param body
+ */
+export async function post(path: string, body: Record<string, unknown>): Promise<ApiResponse> {
   const baseUrl = getBaseUrl();
   const url = new URL(path, baseUrl);
 

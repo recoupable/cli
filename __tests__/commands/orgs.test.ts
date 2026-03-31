@@ -1,12 +1,12 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
+import { orgsCommand } from "../../src/commands/orgs.js";
+import { get } from "../../src/client.js";
+
 vi.mock("../../src/client.js", () => ({
   get: vi.fn(),
   post: vi.fn(),
 }));
-
-import { orgsCommand } from "../../src/commands/orgs.js";
-import { get } from "../../src/client.js";
 
 let logSpy: ReturnType<typeof vi.spyOn>;
 let errorSpy: ReturnType<typeof vi.spyOn>;
@@ -15,9 +15,7 @@ let exitSpy: ReturnType<typeof vi.spyOn>;
 beforeEach(() => {
   logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
   errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-  exitSpy = vi
-    .spyOn(process, "exit")
-    .mockImplementation(() => undefined as never);
+  exitSpy = vi.spyOn(process, "exit").mockImplementation(() => undefined as never);
 });
 
 afterEach(() => {

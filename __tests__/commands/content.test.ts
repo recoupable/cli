@@ -1,12 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { contentCommand } from "../../src/commands/content.js";
+import { get, post } from "../../src/client.js";
+
 vi.mock("../../src/client.js", () => ({
   get: vi.fn(),
   post: vi.fn(),
 }));
-
-import { contentCommand } from "../../src/commands/content.js";
-import { get, post } from "../../src/client.js";
 
 let logSpy: ReturnType<typeof vi.spyOn>;
 let errorSpy: ReturnType<typeof vi.spyOn>;
@@ -26,17 +26,13 @@ describe("content command", () => {
   it("lists templates", async () => {
     vi.mocked(get).mockResolvedValue({
       status: "success",
-      templates: [
-        { name: "artist-caption-bedroom", description: "Moody purple bedroom setting" },
-      ],
+      templates: [{ name: "artist-caption-bedroom", description: "Moody purple bedroom setting" }],
     });
 
     await contentCommand.parseAsync(["templates"], { from: "user" });
 
     expect(get).toHaveBeenCalledWith("/api/content/templates");
-    expect(logSpy).toHaveBeenCalledWith(
-      "- artist-caption-bedroom: Moody purple bedroom setting",
-    );
+    expect(logSpy).toHaveBeenCalledWith("- artist-caption-bedroom: Moody purple bedroom setting");
   });
 
   it("validates an artist", async () => {
@@ -47,7 +43,10 @@ describe("content command", () => {
       missing: [],
     });
 
-    await contentCommand.parseAsync(["validate", "--artist", "550e8400-e29b-41d4-a716-446655440000"], { from: "user" });
+    await contentCommand.parseAsync(
+      ["validate", "--artist", "550e8400-e29b-41d4-a716-446655440000"],
+      { from: "user" },
+    );
 
     expect(get).toHaveBeenCalledWith("/api/content/validate", {
       artist_account_id: "550e8400-e29b-41d4-a716-446655440000",
@@ -79,7 +78,13 @@ describe("content command", () => {
     });
 
     await contentCommand.parseAsync(
-      ["create", "--artist", "550e8400-e29b-41d4-a716-446655440000", "--template", "artist-caption-bedroom"],
+      [
+        "create",
+        "--artist",
+        "550e8400-e29b-41d4-a716-446655440000",
+        "--template",
+        "artist-caption-bedroom",
+      ],
       { from: "user" },
     );
 
@@ -129,10 +134,9 @@ describe("content command", () => {
   });
 
   it("errors when --batch is not a positive integer", async () => {
-    await contentCommand.parseAsync(
-      ["create", "--artist", "test-artist", "--batch", "abc"],
-      { from: "user" },
-    );
+    await contentCommand.parseAsync(["create", "--artist", "test-artist", "--batch", "abc"], {
+      from: "user",
+    });
 
     expect(errorSpy).toHaveBeenCalledWith("Error: --batch must be a positive integer");
     expect(exitSpy).toHaveBeenCalledWith(1);
@@ -155,14 +159,9 @@ describe("content command", () => {
       status: "error",
     });
 
-    await contentCommand.parseAsync(
-      ["create", "--artist", "test-artist"],
-      { from: "user" },
-    );
+    await contentCommand.parseAsync(["create", "--artist", "test-artist"], { from: "user" });
 
-    expect(errorSpy).toHaveBeenCalledWith(
-      "Error: Response did not include any run IDs",
-    );
+    expect(errorSpy).toHaveBeenCalledWith("Error: Response did not include any run IDs");
     expect(exitSpy).toHaveBeenCalledWith(1);
   });
 
@@ -173,7 +172,16 @@ describe("content command", () => {
     });
 
     await contentCommand.parseAsync(
-      ["create", "--artist", "test-artist", "--caption-length", "long", "--upscale", "--batch", "3"],
+      [
+        "create",
+        "--artist",
+        "test-artist",
+        "--caption-length",
+        "long",
+        "--upscale",
+        "--batch",
+        "3",
+      ],
       { from: "user" },
     );
 
@@ -188,4 +196,3 @@ describe("content command", () => {
     expect(logSpy).toHaveBeenCalledWith("Batch started: 3 videos");
   });
 });
-
