@@ -2,21 +2,19 @@ import { createPrimitiveCommand } from "./createPrimitiveCommand.js";
 
 export const audioCommand = createPrimitiveCommand(
   "transcribe-audio",
-  "Transcribe a song into timestamped lyrics",
+  "Transcribe audio into timestamped text",
   "/api/content/transcribe-audio",
   [
-    { flag: "--artist <id>", description: "Artist account ID" },
-    { flag: "--song <slugs>", description: "Comma-separated song slugs or URLs" },
-    { flag: "--lipsync", description: "Prefer clips with lyrics for lipsync" },
+    { flag: "--url <urls>", description: "Comma-separated audio URLs to transcribe" },
+    { flag: "--model <id>", description: "Model ID (default: fal-ai/whisper)" },
   ],
   (opts) => {
-    const songs: string[] | undefined = opts.song
-      ? String(opts.song).split(",").map((s: string) => s.trim()).filter(Boolean)
-      : undefined;
+    const audioUrls: string[] = opts.url
+      ? String(opts.url).split(",").map((s: string) => s.trim()).filter(Boolean)
+      : [];
     return {
-      artist_account_id: opts.artist,
-      lipsync: !!opts.lipsync,
-      ...(songs && { songs }),
+      audio_urls: audioUrls,
+      ...(opts.model && { model: opts.model }),
     };
   },
 );

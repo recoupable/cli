@@ -7,7 +7,7 @@ import { imageCommand } from "./content/imageCommand.js";
 import { videoCommand } from "./content/videoCommand.js";
 import { textCommand } from "./content/textCommand.js";
 import { audioCommand } from "./content/audioCommand.js";
-import { renderCommand } from "./content/renderCommand.js";
+import { editCommand } from "./content/editCommand.js";
 import { upscaleCommand } from "./content/upscaleCommand.js";
 
 export const contentCommand = new Command("content")
@@ -21,5 +21,5 @@ contentCommand.addCommand(imageCommand);
 contentCommand.addCommand(videoCommand);
 contentCommand.addCommand(textCommand);
 contentCommand.addCommand(audioCommand);
-contentCommand.addCommand(renderCommand);
+contentCommand.addCommand(editCommand);
 contentCommand.addCommand(upscaleCommand);

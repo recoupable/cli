@@ -2,24 +2,20 @@ import { createPrimitiveCommand } from "./createPrimitiveCommand.js";
 
 export const videoCommand = createPrimitiveCommand(
   "generate-video",
-  "Generate a video from an image (or audio-to-video for lipsync)",
+  "Generate a video from an image (or audio-driven for lipsync)",
   "/api/content/generate-video",
   [
     { flag: "--image <url>", description: "Image URL to animate" },
-    { flag: "--template <name>", description: "Template name for motion prompt" },
-    { flag: "--lipsync", description: "Use audio-to-video mode (requires --song-url)" },
-    { flag: "--song-url <url>", description: "Song URL for lipsync mode" },
-    { flag: "--start <seconds>", description: "Audio start time in seconds" },
-    { flag: "--duration <seconds>", description: "Audio duration in seconds" },
+    { flag: "--lipsync", description: "Use audio-to-video mode (requires --audio)" },
+    { flag: "--audio <url>", description: "Audio URL for lipsync mode" },
     { flag: "--motion <text>", description: "Custom motion prompt" },
+    { flag: "--model <id>", description: "Model ID (default: fal-ai/veo3.1/fast/image-to-video)" },
   ],
   (opts) => ({
     image_url: opts.image,
-    ...(opts.template && { template: opts.template }),
     lipsync: !!opts.lipsync,
-    ...(opts.songUrl && { song_url: opts.songUrl }),
-    ...(opts.start && { audio_start_seconds: Number(opts.start) }),
-    ...(opts.duration && { audio_duration_seconds: Number(opts.duration) }),
+    ...(opts.audio && { audio_url: opts.audio }),
     ...(opts.motion && { motion_prompt: opts.motion }),
+    ...(opts.model && { model: opts.model }),
   }),
 );

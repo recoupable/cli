@@ -2,18 +2,16 @@ import { createPrimitiveCommand } from "./createPrimitiveCommand.js";
 
 export const imageCommand = createPrimitiveCommand(
   "generate-image",
-  "Generate an AI image from a template and face guide",
+  "Generate an AI image from a prompt and optional reference image",
   "/api/content/generate-image",
   [
-    { flag: "--artist <id>", description: "Artist account ID" },
-    { flag: "--template <name>", description: "Template name", defaultValue: "artist-caption-bedroom" },
-    { flag: "--face-guide <url>", description: "Face guide image URL (overrides artist default)" },
-    { flag: "--prompt <text>", description: "Custom image prompt (overrides template)" },
+    { flag: "--prompt <text>", description: "Image generation prompt" },
+    { flag: "--reference-image <url>", description: "Reference image URL for conditioning" },
+    { flag: "--model <id>", description: "Model ID (default: fal-ai/nano-banana-pro/edit)" },
   ],
   (opts) => ({
-    artist_account_id: opts.artist,
-    template: opts.template,
-    ...(opts.faceGuide && { face_guide_url: opts.faceGuide }),
     ...(opts.prompt && { prompt: opts.prompt }),
+    ...(opts.referenceImage && { reference_image_url: opts.referenceImage }),
+    ...(opts.model && { model: opts.model }),
   }),
 );
