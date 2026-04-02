@@ -1,9 +1,9 @@
 import { createPrimitiveCommand } from "./createPrimitiveCommand.js";
 
 export const audioCommand = createPrimitiveCommand(
-  "transcribe-audio",
+  "transcribe",
   "Transcribe audio into timestamped text",
-  "/api/content/transcribe-audio",
+  "/api/content/transcribe",
   [
     { flag: "--url <urls>", description: "Comma-separated audio URLs to transcribe" },
     { flag: "--model <id>", description: "Model ID (default: fal-ai/whisper)" },

@@ -1,9 +1,9 @@
 import { createPrimitiveCommand } from "./createPrimitiveCommand.js";
 
 export const videoCommand = createPrimitiveCommand(
-  "generate-video",
+  "video",
   "Generate a video (prompt, animate, reference, extend, first-last, or lipsync)",
-  "/api/content/generate-video",
+  "/api/content/video",
   [
     { flag: "--mode <mode>", description: "Mode: prompt, animate, reference, extend, first-last, lipsync" },
     { flag: "--prompt <text>", description: "Text prompt describing the video" },

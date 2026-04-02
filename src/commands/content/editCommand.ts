@@ -1,5 +1,5 @@
 import { Command } from "commander";
-import { post } from "../../client.js";
+import { patch } from "../../client.js";
 import { getErrorMessage } from "../../getErrorMessage.js";
 import { printError, printJson } from "../../output.js";
 
@@ -63,7 +63,7 @@ export const editCommand = new Command("edit")
         output_format: opts.outputFormat ?? "mp4",
       };
 
-      const data = await post("/api/content/edit", body);
+      const data = await patch("/api/content/video", body);
 
       if (opts.json) {
         printJson(data);

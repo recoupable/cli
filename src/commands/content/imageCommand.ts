@@ -1,9 +1,9 @@
 import { createPrimitiveCommand } from "./createPrimitiveCommand.js";
 
 export const imageCommand = createPrimitiveCommand(
-  "generate-image",
+  "image",
   "Generate an AI image from a prompt and optional reference image",
-  "/api/content/generate-image",
+  "/api/content/image",
   [
     { flag: "--prompt <text>", description: "Image generation prompt" },
     { flag: "--reference-image <url>", description: "Reference image URL for conditioning" },
