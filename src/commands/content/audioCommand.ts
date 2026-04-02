@@ -1,9 +1,9 @@
 import { createPrimitiveCommand } from "./createPrimitiveCommand.js";
 
 export const audioCommand = createPrimitiveCommand(
-  "audio",
-  "Select a song clip (transcribe, analyze, pick best moment)",
-  "/api/content/create/audio",
+  "transcribe-audio",
+  "Transcribe a song into timestamped lyrics",
+  "/api/content/transcribe-audio",
   [
     { flag: "--artist <id>", description: "Artist account ID" },
     { flag: "--song <slugs>", description: "Comma-separated song slugs or URLs" },

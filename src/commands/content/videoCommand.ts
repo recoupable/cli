@@ -1,9 +1,9 @@
 import { createPrimitiveCommand } from "./createPrimitiveCommand.js";
 
 export const videoCommand = createPrimitiveCommand(
-  "video",
+  "generate-video",
   "Generate a video from an image (or audio-to-video for lipsync)",
-  "/api/content/create/video",
+  "/api/content/generate-video",
   [
     { flag: "--image <url>", description: "Image URL to animate" },
     { flag: "--template <name>", description: "Template name for motion prompt" },

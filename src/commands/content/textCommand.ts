@@ -1,9 +1,9 @@
 import { createPrimitiveCommand } from "./createPrimitiveCommand.js";
 
 export const textCommand = createPrimitiveCommand(
-  "text",
-  "Generate on-screen text for a social video",
-  "/api/content/create/text",
+  "generate-caption",
+  "Generate on-screen caption text for a social video",
+  "/api/content/generate-caption",
   [
     { flag: "--artist <id>", description: "Artist account ID" },
     { flag: "--song <name>", description: "Song name or slug" },

@@ -3,7 +3,7 @@ import { createPrimitiveCommand } from "./createPrimitiveCommand.js";
 export const renderCommand = createPrimitiveCommand(
   "render",
   "Combine video + audio + text into a final social video",
-  "/api/content/create/render",
+  "/api/content/render",
   [
     { flag: "--video <url>", description: "Video URL" },
     { flag: "--audio <url>", description: "Song URL" },
