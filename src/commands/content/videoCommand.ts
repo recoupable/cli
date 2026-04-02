@@ -12,7 +12,7 @@ export const videoCommand = createPrimitiveCommand(
     { flag: "--model <id>", description: "Model ID (default: fal-ai/veo3.1/fast/image-to-video)" },
   ],
   (opts) => ({
-    image_url: opts.image,
+    ...(opts.image && { image_url: opts.image }),
     lipsync: !!opts.lipsync,
     ...(opts.audio && { audio_url: opts.audio }),
     ...(opts.motion && { motion_prompt: opts.motion }),
