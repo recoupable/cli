@@ -9,7 +9,7 @@ interface EditOperation {
 }
 
 export const editCommand = new Command("edit")
-  .description("Edit media with an operations pipeline or a template preset")
+  .description("Edit content — trim, crop, resize, overlay text, or add audio")
   .option("--video <url>", "Input video URL")
   .option("--audio <url>", "Input audio URL")
   .option("--template <name>", "Template name for deterministic edit config")
@@ -63,7 +63,7 @@ export const editCommand = new Command("edit")
         output_format: opts.outputFormat ?? "mp4",
       };
 
-      const data = await patch("/api/content/video", body);
+      const data = await patch("/api/content", body);
 
       if (opts.json) {
         printJson(data);

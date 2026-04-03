@@ -9,6 +9,7 @@ import { textCommand } from "./content/textCommand.js";
 import { audioCommand } from "./content/audioCommand.js";
 import { editCommand } from "./content/editCommand.js";
 import { upscaleCommand } from "./content/upscaleCommand.js";
+import { analyzeCommand } from "./content/analyzeCommand.js";
 
 export const contentCommand = new Command("content")
   .description("Content-creation pipeline commands");
@@ -23,3 +24,4 @@ contentCommand.addCommand(textCommand);
 contentCommand.addCommand(audioCommand);
 contentCommand.addCommand(editCommand);
 contentCommand.addCommand(upscaleCommand);
+contentCommand.addCommand(analyzeCommand);

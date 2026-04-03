@@ -17,6 +17,7 @@ export const videoCommand = createPrimitiveCommand(
     { flag: "--negative-prompt <text>", description: "What to avoid in the video" },
     { flag: "--generate-audio", description: "Generate audio for the video" },
     { flag: "--model <id>", description: "Override model ID" },
+    { flag: "--template <name>", description: "Template ID for video generation config (moods, movements). Optional — overrides prompt with template defaults." },
   ],
   (opts) => ({
     ...(opts.mode && { mode: opts.mode }),
@@ -31,5 +32,6 @@ export const videoCommand = createPrimitiveCommand(
     ...(opts.negativePrompt && { negative_prompt: opts.negativePrompt }),
     generate_audio: !!opts.generateAudio,
     ...(opts.model && { model: opts.model }),
+    ...(opts.template && { template: opts.template }),
   }),
 );
