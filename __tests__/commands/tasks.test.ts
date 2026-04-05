@@ -1,12 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { tasksCommand } from "../../src/commands/tasks.js";
+import { get } from "../../src/client.js";
+
 vi.mock("../../src/client.js", () => ({
   get: vi.fn(),
   post: vi.fn(),
 }));
-
-import { tasksCommand } from "../../src/commands/tasks.js";
-import { get } from "../../src/client.js";
 
 let logSpy: ReturnType<typeof vi.spyOn>;
 let errorSpy: ReturnType<typeof vi.spyOn>;

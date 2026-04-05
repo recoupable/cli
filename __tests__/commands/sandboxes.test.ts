@@ -1,12 +1,12 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
+import { sandboxesCommand } from "../../src/commands/sandboxes.js";
+import { get, post } from "../../src/client.js";
+
 vi.mock("../../src/client.js", () => ({
   get: vi.fn(),
   post: vi.fn(),
 }));
-
-import { sandboxesCommand } from "../../src/commands/sandboxes.js";
-import { get, post } from "../../src/client.js";
 
 let logSpy: ReturnType<typeof vi.spyOn>;
 let errorSpy: ReturnType<typeof vi.spyOn>;
@@ -15,9 +15,7 @@ let exitSpy: ReturnType<typeof vi.spyOn>;
 beforeEach(() => {
   logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
   errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-  exitSpy = vi
-    .spyOn(process, "exit")
-    .mockImplementation(() => undefined as never);
+  exitSpy = vi.spyOn(process, "exit").mockImplementation(() => undefined as never);
 });
 
 afterEach(() => {
@@ -44,9 +42,7 @@ describe("sandboxes list", () => {
   });
 
   it("prints JSON with --json flag", async () => {
-    const sandboxes = [
-      { sandboxId: "sb-1", sandboxStatus: "running", createdAt: "2025-01-01" },
-    ];
+    const sandboxes = [{ sandboxId: "sb-1", sandboxStatus: "running", createdAt: "2025-01-01" }];
     vi.mocked(get).mockResolvedValue({ status: "success", sandboxes });
 
     await sandboxesCommand.parseAsync(["list", "--json"], { from: "user" });
@@ -74,10 +70,7 @@ describe("sandboxes create", () => {
       sandboxes: [{ sandboxId: "sb-new" }],
     });
 
-    await sandboxesCommand.parseAsync(
-      ["create", "--command", "echo hello"],
-      { from: "user" },
-    );
+    await sandboxesCommand.parseAsync(["create", "--command", "echo hello"], { from: "user" });
 
     expect(post).toHaveBeenCalledWith("/api/sandboxes", {
       command: "echo hello",
