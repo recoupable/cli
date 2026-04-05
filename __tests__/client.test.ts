@@ -73,8 +73,7 @@ describe("get", () => {
   it("throws on API error status", async () => {
     mockFetch.mockResolvedValue({
       ok: true,
-      json: () =>
-        Promise.resolve({ status: "error", error: "Something went wrong" }),
+      json: () => Promise.resolve({ status: "error", error: "Something went wrong" }),
     });
 
     await expect(get("/api/test")).rejects.toThrow("Something went wrong");
@@ -105,8 +104,7 @@ describe("post", () => {
     mockFetch.mockResolvedValue({
       ok: false,
       status: 400,
-      json: () =>
-        Promise.resolve({ status: "error", message: "Bad request" }),
+      json: () => Promise.resolve({ status: "error", message: "Bad request" }),
     });
 
     await expect(post("/api/test", {})).rejects.toThrow("Bad request");
