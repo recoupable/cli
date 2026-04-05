@@ -10,7 +10,7 @@ Examples:
   recoup research metrics "Drake" --source spotify
   recoup research similar "Drake" --audience high --genre high
   recoup research web "Drake brand partnerships"
-  recoup research report "Tell me about Drake"
+  recoup research deep "Tell me about Drake"
   recoup research people "A&R reps Atlantic Records"
   recoup research extract "https://en.wikipedia.org/wiki/Drake_(musician)"
   recoup research enrich "Drake" --schema '{"properties":{"label":{"type":"string"}}}'`;
@@ -462,14 +462,14 @@ Examples:
     } catch (err) { printError((err as Error).message); }
   });
 
-const deepCommand = new Command("report")
-  .description("Deep research report with citations")
+const deepCommand = new Command("deep")
+  .description("Deep web research with citations (uses Perplexity deep-research)")
   .argument("<query>", "Research query")
   .option("--json", "Output as JSON")
   .addHelpText("after", `
 Examples:
-  recoup research report "Tell me everything about Drake"
-  recoup research report "Competitive landscape for independent R&B artists in 2026" --json`)
+  recoup research deep "Tell me everything about Drake"
+  recoup research deep "Competitive landscape for independent R&B artists in 2026" --json`)
   .action(async (query, opts) => {
     try {
       const data = await post("/api/research/deep", { query });
