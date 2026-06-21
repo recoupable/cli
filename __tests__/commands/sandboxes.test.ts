@@ -39,7 +39,7 @@ describe("sandboxes list", () => {
 
     await sandboxesCommand.parseAsync(["list"], { from: "user" });
 
-    expect(get).toHaveBeenCalledWith("/api/sandboxes");
+    expect(get).toHaveBeenCalledWith("/api/sandboxes", {});
     expect(logSpy).toHaveBeenCalledTimes(3);
   });
 

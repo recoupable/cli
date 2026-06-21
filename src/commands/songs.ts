@@ -1,6 +1,29 @@
 import { Command } from "commander";
 import { get, post } from "../client.js";
-import { printJson, printError } from "../output.js";
+import { printJson, printError, printTable } from "../output.js";
+import { runAction, emit } from "../runAction.js";
+
+const listCommand = new Command("list")
+  .description("List songs, optionally filtered by ISRC or artist")
+  .option("--isrc <isrc>", "Match a single ISRC code")
+  .option("--artist <id>", "Filter by artist account ID")
+  .option("--json", "Output as JSON")
+  .action(
+    runAction(async (opts) => {
+      const params: Record<string, string> = {};
+      if (opts.isrc) params.isrc = opts.isrc;
+      if (opts.artist) params.artist_account_id = opts.artist;
+      const data = await get("/api/songs", params);
+      const songs = (data.songs as Record<string, unknown>[]) || [];
+      emit(opts, songs, () =>
+        printTable(songs, [
+          { key: "isrc", label: "ISRC" },
+          { key: "name", label: "NAME" },
+          { key: "album", label: "ALBUM" },
+        ]),
+      );
+    }),
+  );
 
 const analyzeCommand = new Command("analyze")
   .description("Analyze music using a preset or custom prompt")
@@ -78,6 +101,16 @@ const presetsCommand = new Command("presets")
   });
 
 export const songsCommand = new Command("songs")
-  .description("Song analysis tools")
+  .description("List songs and run audio analysis")
+  .addCommand(listCommand)
   .addCommand(analyzeCommand)
-  .addCommand(presetsCommand);
+  .addCommand(presetsCommand)
+  .addHelpText(
+    "after",
+    `
+Examples:
+  recoup songs list --artist <id>
+  recoup songs presets
+  recoup songs analyze --preset catalog_metadata --audio https://example.com/song.mp3
+`,
+  );

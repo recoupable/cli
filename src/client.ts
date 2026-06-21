@@ -7,12 +7,8 @@ export interface ApiResponse {
   [key: string]: unknown;
 }
 
-export async function get(
-  path: string,
-  params?: Record<string, string>,
-): Promise<ApiResponse> {
-  const baseUrl = getBaseUrl();
-  const url = new URL(path, baseUrl);
+function buildUrl(path: string, params?: Record<string, string>): string {
+  const url = new URL(path, getBaseUrl());
   if (params) {
     for (const [key, value] of Object.entries(params)) {
       if (value !== undefined && value !== "") {
@@ -20,45 +16,82 @@ export async function get(
       }
     }
   }
+  return url.toString();
+}
 
-  const response = await fetch(url.toString(), {
+async function parseResponse(response: Response): Promise<ApiResponse> {
+  const text = await response.text();
+  let data: ApiResponse;
+  try {
+    data = text ? (JSON.parse(text) as ApiResponse) : {};
+  } catch {
+    // Non-JSON response (e.g. plain text error pages)
+    data = { message: text };
+  }
+
+  if (!response.ok || data.status === "error") {
+    throw new Error(
+      data.error || data.message || `Request failed: ${response.status}`,
+    );
+  }
+
+  return data;
+}
+
+export async function get(
+  path: string,
+  params?: Record<string, string>,
+): Promise<ApiResponse> {
+  const response = await fetch(buildUrl(path, params), {
     method: "GET",
     headers: {
       "x-api-key": getApiKey(),
       "Content-Type": "application/json",
     },
   });
-
-  const data: ApiResponse = await response.json();
-
-  if (!response.ok || data.status === "error") {
-    throw new Error(data.error || data.message || `Request failed: ${response.status}`);
-  }
-
-  return data;
+  return parseResponse(response);
 }
 
-export async function post(
+async function sendBody(
+  method: "POST" | "PATCH" | "PUT" | "DELETE",
   path: string,
-  body: Record<string, unknown>,
+  body?: Record<string, unknown>,
 ): Promise<ApiResponse> {
-  const baseUrl = getBaseUrl();
-  const url = new URL(path, baseUrl);
-
-  const response = await fetch(url.toString(), {
-    method: "POST",
+  const response = await fetch(buildUrl(path), {
+    method,
     headers: {
       "x-api-key": getApiKey(),
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(body),
+    body: body === undefined ? undefined : JSON.stringify(body),
   });
+  return parseResponse(response);
+}
 
-  const data: ApiResponse = await response.json();
+export function post(
+  path: string,
+  body: Record<string, unknown>,
+): Promise<ApiResponse> {
+  return sendBody("POST", path, body);
+}
 
-  if (!response.ok || data.status === "error") {
-    throw new Error(data.error || data.message || `Request failed: ${response.status}`);
-  }
+export function patch(
+  path: string,
+  body: Record<string, unknown>,
+): Promise<ApiResponse> {
+  return sendBody("PATCH", path, body);
+}
 
-  return data;
+export function put(
+  path: string,
+  body: Record<string, unknown>,
+): Promise<ApiResponse> {
+  return sendBody("PUT", path, body);
+}
+
+export function del(
+  path: string,
+  body?: Record<string, unknown>,
+): Promise<ApiResponse> {
+  return sendBody("DELETE", path, body);
 }
