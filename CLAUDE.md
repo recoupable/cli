@@ -44,7 +44,7 @@ pnpm test           # Run tests with vitest
 - Wrap every `.action` in `runAction(async (...) => { ... })`.
 
 ## API Base URL
-Default: `https://recoup-api.vercel.app`
+Default: `https://api.recoupable.com`
 Override: `RECOUP_API_URL` env var
 
 ## Code Principles

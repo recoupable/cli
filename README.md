@@ -136,7 +136,7 @@ raw API response.
 | Variable | Required | Description |
 |----------|----------|-------------|
 | `RECOUP_API_KEY` | Yes | Your Recoup API key (sent as `x-api-key`) |
-| `RECOUP_API_URL` | No | API base URL (default: `https://recoup-api.vercel.app`) |
+| `RECOUP_API_URL` | No | API base URL (default: `https://api.recoupable.com`) |
 
 ## License
 
