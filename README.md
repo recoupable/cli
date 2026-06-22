@@ -2,6 +2,11 @@
 
 Command-line interface for the [Recoup](https://recoupable.com) platform.
 
+The CLI is **agent-first**: every command is non-interactive, accepts all input
+as flags (or piped stdin), supports `--json` for machine-readable output, fails
+fast with actionable errors, and ships layered `--help` with examples. It aims
+for full parity with the Recoup REST API.
+
 ## Quick Start
 
 ### Install
@@ -33,54 +38,105 @@ source ~/.zshrc
 recoup whoami
 ```
 
-## Commands
+## Discovering commands
 
-### Account
-
-```bash
-recoup whoami              # Show your account ID
-recoup whoami --json       # Output as JSON
-```
-
-### Artists
+Agents should discover commands incrementally rather than reading everything up
+front:
 
 ```bash
-recoup artists list        # List your artists
-recoup artists list --json
+recoup --help                 # top-level command groups
+recoup research --help        # subcommands within a group
+recoup research metrics --help  # flags + examples for one command
 ```
 
-### Chats
+## Command groups
+
+| Group | What it does |
+|-------|--------------|
+| `whoami` | Show the authenticated account ID |
+| `accounts` | Account details, credits, subscription, profile updates, catalogs |
+| `orgs` | List/create organizations, add artists |
+| `workspaces` | Create workspaces |
+| `artists` | List/create/update/delete artists; fans, posts, socials, scrape |
+| `songs` | List songs, run audio analysis (presets or custom prompts) |
+| `catalogs` | Create catalogs, add/remove/list songs |
+| `generate` | Run the AI agent and get the final text (non-streaming) |
+| `chats` | List/create/rename/delete chats, read messages, compact |
+| `sessions` | Create/get/update agent & coding sessions |
+| `tasks` | Create/update/delete scheduled tasks; list and check runs |
+| `templates` | Manage reusable agent prompt templates |
+| `models` | List available AI models |
+| `pulses` | Enable/disable automated daily artist briefings |
+| `content` | Captions, images, video, transcription, analysis, upscaling, editing |
+| `research` | Artist/track/audience research, web search, deep research, enrichment |
+| `spotify` | Query Spotify catalog data |
+| `connectors` | Connect integrations and run their actions |
+| `sandboxes` | Manage sandboxes and their files |
+| `notifications` | Email the account owner |
+
+### Examples
 
 ```bash
-recoup chats list                    # List your chats
-recoup chats create --name "Topic"   # Create a new chat
-recoup chats create --artist <id>    # Create a chat with an artist
+# Identity & account
+recoup whoami
+recoup accounts credits --json
+recoup accounts update --name "Jane Doe" --instruction "Always be concise"
+
+# Run the agent (flags or stdin)
+recoup generate --prompt "What are this artist's top markets?" --artist <id>
+echo "Draft a release announcement" | recoup generate --json
+
+# Artists
+recoup artists create --name "Daft Punk"
+recoup artists fans <id> --limit 50 --json
+recoup artists scrape --artist <id>
+
+# Research
+recoup research search --q "Daft Punk" --type artists
+recoup research profile --artist "Daft Punk" --json
+recoup research metrics --artist "Daft Punk" --source spotify
+recoup research web --query "latest music industry news" --max-results 5
+recoup research deep --query "Impact of TikTok on music discovery"
+recoup research track-stats --isrc USUM71807100 --source spotify
+
+# Content
+recoup content caption --topic "summer tour announcement"
+recoup content image --prompt "neon synthwave album cover" --aspect 1:1
+recoup content transcribe --audio https://example.com/song.mp3
+
+# Tasks
+recoup tasks create --title "Daily report" --prompt "Summarize streams" \
+  --schedule "0 9 * * *" --artist <id>
+recoup tasks status --run <runId>
+
+# Connectors
+recoup connectors list
+recoup connectors run --action GMAIL_FETCH_EMAILS --params '{"max_results":10}'
 ```
 
-### Sandboxes
+### Pipelines & stdin
+
+Commands that take freeform text or JSON accept piped stdin, so they compose in
+shell pipelines:
 
 ```bash
-recoup sandboxes list                       # List your sandboxes
-recoup sandboxes create                     # Create a new sandbox
-recoup sandboxes create --command "ls -la"  # Create and run a command
+echo "What changed this week?" | recoup generate --json
+cat songs.json | recoup catalogs add-songs --catalog <id>
+echo '{"max_results":10}' | recoup connectors run --action GMAIL_FETCH_EMAILS
 ```
 
-### Organizations
+### Global flags
 
-```bash
-recoup orgs list           # List your organizations
-```
-
-### Global Flags
-
-All commands support `--json` for machine-readable JSON output.
+All commands support `--json` for machine-readable JSON output. On success,
+commands print machine-useful values (IDs, URLs); with `--json` they print the
+raw API response.
 
 ## Configuration
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `RECOUP_API_KEY` | Yes | Your Recoup API key |
-| `RECOUP_API_URL` | No | API base URL (default: `https://recoup-api.vercel.app`) |
+| `RECOUP_API_KEY` | Yes | Your Recoup API key (sent as `x-api-key`) |
+| `RECOUP_API_URL` | No | API base URL (default: `https://api.recoupable.com`) |
 
 ## License
 

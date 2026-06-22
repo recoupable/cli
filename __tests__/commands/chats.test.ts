@@ -39,7 +39,7 @@ describe("chats list", () => {
 
     await chatsCommand.parseAsync(["list"], { from: "user" });
 
-    expect(get).toHaveBeenCalledWith("/api/chats");
+    expect(get).toHaveBeenCalledWith("/api/chats", {});
     expect(logSpy).toHaveBeenCalledTimes(3); // header + separator + 1 row
   });
 
