@@ -5,7 +5,7 @@ vi.mock("../../src/client.js", () => ({
   post: vi.fn(),
 }));
 
-import { notificationsCommand } from "../../src/commands/notifications.js";
+import { emailsCommand } from "../../src/commands/emails.js";
 import { post } from "../../src/client.js";
 
 let logSpy: ReturnType<typeof vi.spyOn>;
@@ -24,15 +24,15 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-describe("notifications command", () => {
-  it("sends notification with subject and text", async () => {
+describe("emails command", () => {
+  it("sends an email with subject and text", async () => {
     vi.mocked(post).mockResolvedValue({
       success: true,
       message: "Email sent successfully.",
       id: "email-123",
     });
 
-    await notificationsCommand.parseAsync(
+    await emailsCommand.parseAsync(
       ["--subject", "Test Subject", "--text", "Hello world"],
       { from: "user" },
     );
@@ -44,14 +44,14 @@ describe("notifications command", () => {
     expect(logSpy).toHaveBeenCalledWith("Email sent successfully.");
   });
 
-  it("sends notification with html body", async () => {
+  it("sends an email with html body", async () => {
     vi.mocked(post).mockResolvedValue({
       success: true,
       message: "Email sent successfully.",
       id: "email-456",
     });
 
-    await notificationsCommand.parseAsync(
+    await emailsCommand.parseAsync(
       ["--subject", "Weekly Pulse", "--html", "<h1>Report</h1>"],
       { from: "user" },
     );
@@ -69,7 +69,7 @@ describe("notifications command", () => {
       id: "email-789",
     });
 
-    await notificationsCommand.parseAsync(
+    await emailsCommand.parseAsync(
       [
         "--subject",
         "Update",
@@ -98,7 +98,7 @@ describe("notifications command", () => {
       id: "email-multi",
     });
 
-    await notificationsCommand.parseAsync(
+    await emailsCommand.parseAsync(
       [
         "--subject",
         "Update",
@@ -124,7 +124,7 @@ describe("notifications command", () => {
     };
     vi.mocked(post).mockResolvedValue(response);
 
-    await notificationsCommand.parseAsync(
+    await emailsCommand.parseAsync(
       ["--subject", "Test", "--json"],
       { from: "user" },
     );
@@ -141,7 +141,7 @@ describe("notifications command", () => {
       id: "email-account",
     });
 
-    await notificationsCommand.parseAsync(
+    await emailsCommand.parseAsync(
       [
         "--subject",
         "Override Test",
@@ -167,7 +167,7 @@ describe("notifications command", () => {
       id: "email-no-account",
     });
 
-    await notificationsCommand.parseAsync(
+    await emailsCommand.parseAsync(
       ["--subject", "Test"],
       { from: "user" },
     );
@@ -177,10 +177,26 @@ describe("notifications command", () => {
     });
   });
 
+  it("omits subject when --subject is not provided (now optional)", async () => {
+    vi.mocked(post).mockResolvedValue({
+      success: true,
+      message: "Email sent successfully.",
+      id: "email-no-subject",
+    });
+
+    await emailsCommand.parseAsync(["--text", "# Pulse Report\n\nbody"], {
+      from: "user",
+    });
+
+    expect(post).toHaveBeenCalledWith("/api/emails", {
+      text: "# Pulse Report\n\nbody",
+    });
+  });
+
   it("prints error on failure", async () => {
     vi.mocked(post).mockRejectedValue(new Error("No email address found"));
 
-    await notificationsCommand.parseAsync(
+    await emailsCommand.parseAsync(
       ["--subject", "Test"],
       { from: "user" },
     );
