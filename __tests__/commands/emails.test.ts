@@ -5,7 +5,7 @@ vi.mock("../../src/client.js", () => ({
   post: vi.fn(),
 }));
 
-import { notificationsCommand } from "../../src/commands/notifications.js";
+import { emailsCommand } from "../../src/commands/emails.js";
 import { post } from "../../src/client.js";
 
 let logSpy: ReturnType<typeof vi.spyOn>;
@@ -24,52 +24,52 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-describe("notifications command", () => {
-  it("sends notification with subject and text", async () => {
+describe("emails command", () => {
+  it("sends an email with subject and text", async () => {
     vi.mocked(post).mockResolvedValue({
       success: true,
       message: "Email sent successfully.",
       id: "email-123",
     });
 
-    await notificationsCommand.parseAsync(
+    await emailsCommand.parseAsync(
       ["--subject", "Test Subject", "--text", "Hello world"],
       { from: "user" },
     );
 
-    expect(post).toHaveBeenCalledWith("/api/notifications", {
+    expect(post).toHaveBeenCalledWith("/api/emails", {
       subject: "Test Subject",
       text: "Hello world",
     });
     expect(logSpy).toHaveBeenCalledWith("Email sent successfully.");
   });
 
-  it("sends notification with html body", async () => {
+  it("sends an email with html body", async () => {
     vi.mocked(post).mockResolvedValue({
       success: true,
       message: "Email sent successfully.",
       id: "email-456",
     });
 
-    await notificationsCommand.parseAsync(
+    await emailsCommand.parseAsync(
       ["--subject", "Weekly Pulse", "--html", "<h1>Report</h1>"],
       { from: "user" },
     );
 
-    expect(post).toHaveBeenCalledWith("/api/notifications", {
+    expect(post).toHaveBeenCalledWith("/api/emails", {
       subject: "Weekly Pulse",
       html: "<h1>Report</h1>",
     });
   });
 
-  it("passes cc and room-id options", async () => {
+  it("passes cc and chat-id options", async () => {
     vi.mocked(post).mockResolvedValue({
       success: true,
       message: "Email sent successfully.",
       id: "email-789",
     });
 
-    await notificationsCommand.parseAsync(
+    await emailsCommand.parseAsync(
       [
         "--subject",
         "Update",
@@ -77,17 +77,17 @@ describe("notifications command", () => {
         "Hello",
         "--cc",
         "cc@example.com",
-        "--room-id",
-        "room-abc",
+        "--chat-id",
+        "chat-abc",
       ],
       { from: "user" },
     );
 
-    expect(post).toHaveBeenCalledWith("/api/notifications", {
+    expect(post).toHaveBeenCalledWith("/api/emails", {
       subject: "Update",
       text: "Hello",
       cc: ["cc@example.com"],
-      room_id: "room-abc",
+      chat_id: "chat-abc",
     });
   });
 
@@ -98,7 +98,7 @@ describe("notifications command", () => {
       id: "email-multi",
     });
 
-    await notificationsCommand.parseAsync(
+    await emailsCommand.parseAsync(
       [
         "--subject",
         "Update",
@@ -110,7 +110,7 @@ describe("notifications command", () => {
       { from: "user" },
     );
 
-    expect(post).toHaveBeenCalledWith("/api/notifications", {
+    expect(post).toHaveBeenCalledWith("/api/emails", {
       subject: "Update",
       cc: ["a@example.com", "b@example.com"],
     });
@@ -124,7 +124,7 @@ describe("notifications command", () => {
     };
     vi.mocked(post).mockResolvedValue(response);
 
-    await notificationsCommand.parseAsync(
+    await emailsCommand.parseAsync(
       ["--subject", "Test", "--json"],
       { from: "user" },
     );
@@ -141,7 +141,7 @@ describe("notifications command", () => {
       id: "email-account",
     });
 
-    await notificationsCommand.parseAsync(
+    await emailsCommand.parseAsync(
       [
         "--subject",
         "Override Test",
@@ -153,7 +153,7 @@ describe("notifications command", () => {
       { from: "user" },
     );
 
-    expect(post).toHaveBeenCalledWith("/api/notifications", {
+    expect(post).toHaveBeenCalledWith("/api/emails", {
       subject: "Override Test",
       text: "Hello member",
       account_id: "550e8400-e29b-41d4-a716-446655440000",
@@ -167,20 +167,36 @@ describe("notifications command", () => {
       id: "email-no-account",
     });
 
-    await notificationsCommand.parseAsync(
+    await emailsCommand.parseAsync(
       ["--subject", "Test"],
       { from: "user" },
     );
 
-    expect(post).toHaveBeenCalledWith("/api/notifications", {
+    expect(post).toHaveBeenCalledWith("/api/emails", {
       subject: "Test",
+    });
+  });
+
+  it("omits subject when --subject is not provided (now optional)", async () => {
+    vi.mocked(post).mockResolvedValue({
+      success: true,
+      message: "Email sent successfully.",
+      id: "email-no-subject",
+    });
+
+    await emailsCommand.parseAsync(["--text", "# Pulse Report\n\nbody"], {
+      from: "user",
+    });
+
+    expect(post).toHaveBeenCalledWith("/api/emails", {
+      text: "# Pulse Report\n\nbody",
     });
   });
 
   it("prints error on failure", async () => {
     vi.mocked(post).mockRejectedValue(new Error("No email address found"));
 
-    await notificationsCommand.parseAsync(
+    await emailsCommand.parseAsync(
       ["--subject", "Test"],
       { from: "user" },
     );
