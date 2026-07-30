@@ -1,0 +1,37 @@
+import { createPrimitiveCommand } from "./createPrimitiveCommand.js";
+
+export const videoCommand = createPrimitiveCommand(
+  "video",
+  "Generate a video (prompt, animate, reference, extend, first-last, or lipsync)",
+  "/api/content/video",
+  [
+    { flag: "--mode <mode>", description: "Mode: prompt, animate, reference, extend, first-last, lipsync" },
+    { flag: "--prompt <text>", description: "Text prompt describing the video" },
+    { flag: "--image <url>", description: "Image URL (animate, reference, first-last, lipsync)" },
+    { flag: "--end-image <url>", description: "End frame image URL (first-last mode)" },
+    { flag: "--video <url>", description: "Video URL to extend (extend mode)" },
+    { flag: "--audio <url>", description: "Audio URL (lipsync mode)" },
+    { flag: "--aspect-ratio <ratio>", description: "auto, 16:9, or 9:16", defaultValue: "auto" },
+    { flag: "--duration <dur>", description: "4s, 6s, 7s, or 8s", defaultValue: "8s" },
+    { flag: "--resolution <res>", description: "720p, 1080p, or 4k", defaultValue: "720p" },
+    { flag: "--negative-prompt <text>", description: "What to avoid in the video" },
+    { flag: "--generate-audio", description: "Generate audio for the video" },
+    { flag: "--model <id>", description: "Override model ID" },
+    { flag: "--template <name>", description: "Template ID for video generation config (moods, movements). Optional — overrides prompt with template defaults." },
+  ],
+  (opts) => ({
+    ...(opts.mode && { mode: opts.mode }),
+    ...(opts.prompt && { prompt: opts.prompt }),
+    ...(opts.image && { image_url: opts.image }),
+    ...(opts.endImage && { end_image_url: opts.endImage }),
+    ...(opts.video && { video_url: opts.video }),
+    ...(opts.audio && { audio_url: opts.audio }),
+    aspect_ratio: opts.aspectRatio,
+    duration: opts.duration,
+    resolution: opts.resolution,
+    ...(opts.negativePrompt && { negative_prompt: opts.negativePrompt }),
+    generate_audio: !!opts.generateAudio,
+    ...(opts.model && { model: opts.model }),
+    ...(opts.template && { template: opts.template }),
+  }),
+);

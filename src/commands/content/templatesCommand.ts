@@ -4,7 +4,7 @@ import { getErrorMessage } from "../../getErrorMessage.js";
 import { printError, printJson } from "../../output.js";
 
 export const templatesCommand = new Command("templates")
-  .description("List available content templates")
+  .description("List available content creation templates. Templates are optional — every primitive works without one. Templates provide curated creative recipes.")
   .option("--json", "Output as JSON")
   .action(async opts => {
     try {
