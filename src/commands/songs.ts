@@ -6,15 +6,18 @@ const analyzeCommand = new Command("analyze")
   .description("Analyze music using a preset or custom prompt")
   .option("--prompt <text>", "Custom text prompt (omit when using --preset)")
   .option("--preset <name>", "Use a curated analysis preset (e.g. catalog_metadata, full_report)")
-  .option("--audio <url>", "Public URL to an audio file (MP3, WAV, FLAC)")
+  .option("--audio <url>", "Required public URL to an audio file (MP3, WAV, FLAC)")
   .option("--max-tokens <n>", "Max tokens to generate (default 512)", parseInt)
   .option("--json", "Output as JSON")
   .action(async (opts) => {
     try {
       if (!opts.prompt && !opts.preset) {
-        console.error("Error: Provide --prompt <text> or use --preset <name>. Run 'recoup songs presets' to see available presets.");
-        process.exit(1);
+        return printError("Provide --prompt <text> or use --preset <name>. Run 'recoup songs presets' to see available presets.");
       }
+      if (opts.prompt && opts.preset)
+        return printError("Provide either --preset or --prompt, not both.");
+      if (!opts.audio)
+        return printError("--audio <url> is required for every analysis request.");
 
       const body: Record<string, unknown> = {};
       if (opts.preset) body.preset = opts.preset;
