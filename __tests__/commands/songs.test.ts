@@ -13,6 +13,7 @@ let errorSpy: ReturnType<typeof vi.spyOn>;
 let exitSpy: ReturnType<typeof vi.spyOn>;
 
 beforeEach(() => {
+  vi.clearAllMocks();
   logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
   errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
   exitSpy = vi
@@ -32,10 +33,11 @@ describe("songs analyze", () => {
       elapsed_seconds: 3.2,
     });
 
-    await songsCommand.parseAsync(["analyze", "--prompt", "What genre is this?"], { from: "user" });
+    await songsCommand.parseAsync(["analyze", "--prompt", "What genre is this?", "--audio", "https://example.com/song.mp3"], { from: "user" });
 
     expect(post).toHaveBeenCalledWith("/api/songs/analyze", {
       prompt: "What genre is this?",
+      audio_url: "https://example.com/song.mp3",
     });
   });
 
@@ -62,7 +64,7 @@ describe("songs analyze", () => {
       elapsed_seconds: 2.5,
     });
 
-    await songsCommand.parseAsync(["analyze", "--prompt", "Describe this track."], { from: "user" });
+    await songsCommand.parseAsync(["analyze", "--prompt", "Describe this track.", "--audio", "https://example.com/song.mp3"], { from: "user" });
 
     expect(logSpy).toHaveBeenCalledWith("This is a jazz piece in Bb major.");
   });
@@ -89,7 +91,7 @@ describe("songs analyze", () => {
     };
     vi.mocked(post).mockResolvedValue(data);
 
-    await songsCommand.parseAsync(["analyze", "--prompt", "Describe this.", "--json"], { from: "user" });
+    await songsCommand.parseAsync(["analyze", "--prompt", "Describe this.", "--audio", "https://example.com/song.mp3", "--json"], { from: "user" });
 
     expect(logSpy).toHaveBeenCalledWith(JSON.stringify(data, null, 2));
   });
@@ -112,7 +114,7 @@ describe("songs analyze", () => {
   it("prints error on failure", async () => {
     vi.mocked(post).mockRejectedValue(new Error("Service Unavailable"));
 
-    await songsCommand.parseAsync(["analyze", "--prompt", "Describe this."], { from: "user" });
+    await songsCommand.parseAsync(["analyze", "--prompt", "Describe this.", "--audio", "https://example.com/song.mp3"], { from: "user" });
 
     expect(errorSpy).toHaveBeenCalledWith("Error: Service Unavailable");
     expect(exitSpy).toHaveBeenCalledWith(1);
@@ -123,6 +125,19 @@ describe("songs analyze", () => {
 
     expect(errorSpy).toHaveBeenCalled();
     expect(exitSpy).toHaveBeenCalledWith(1);
+    expect(post).not.toHaveBeenCalled();
+  });
+
+  it("rejects both preset and prompt before making a request", async () => {
+    await songsCommand.parseAsync(["analyze", "--preset", "catalog_metadata", "--prompt", "Describe this", "--audio", "https://example.com/song.mp3"], { from: "user" });
+    expect(errorSpy).toHaveBeenCalledWith("Error: Provide either --preset or --prompt, not both.");
+    expect(post).not.toHaveBeenCalled();
+  });
+
+  it("requires audio before making a request", async () => {
+    await songsCommand.parseAsync(["analyze", "--preset", "catalog_metadata"], { from: "user" });
+    expect(errorSpy).toHaveBeenCalledWith("Error: --audio <url> is required for every analysis request.");
+    expect(post).not.toHaveBeenCalled();
   });
 });
 

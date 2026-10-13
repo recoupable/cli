@@ -45,6 +45,8 @@ jobs:
           git commit -m "chore: bump version to ${VERSION} [skip ci]"
           git push origin HEAD:main
 
+      - run: pnpm exec tsc --noEmit
+
       - run: pnpm build
 
       - run: pnpm test
