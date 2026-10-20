@@ -62,3 +62,35 @@ export async function post(
 
   return data;
 }
+
+/**
+ * Sends a PATCH request to the Recoup API.
+ *
+ * @param path - API endpoint path.
+ * @param body - Request body.
+ * @returns Parsed JSON response.
+ */
+export async function patch(
+  path: string,
+  body: Record<string, unknown>,
+): Promise<ApiResponse> {
+  const baseUrl = getBaseUrl();
+  const url = new URL(path, baseUrl);
+
+  const response = await fetch(url.toString(), {
+    method: "PATCH",
+    headers: {
+      "x-api-key": getApiKey(),
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+
+  const data: ApiResponse = await response.json();
+
+  if (!response.ok || data.status === "error") {
+    throw new Error(data.error || data.message || `Request failed: ${response.status}`);
+  }
+
+  return data;
+}
