@@ -1,0 +1,192 @@
+---
+title: "CLI"
+description: "Install the Recoup CLI and interact with the platform from your terminal."
+---
+
+The Recoup CLI (`@recoupable/cli`) wraps the Recoup API for terminal-first workflows. It's available as a global npm package and comes pre-installed in sandbox environments.
+
+<Note>
+**The CLI is in beta.** The reference below follows the v0.1.15 source command set. Check `recoup --version` and `--help` for the package installed in your environment. For research workflows and most content operations, call the [REST API](/api-reference) directly — the CLI is gradually catching up.
+
+**Agents:** if a command isn't listed below, don't retry — fall back to the corresponding REST endpoint linked under each command.
+</Note>
+
+## Install
+
+```bash
+npm install -g @recoupable/cli
+```
+
+## Authenticate
+
+Set your API key as an environment variable:
+
+```bash
+export RECOUP_API_KEY=your-api-key
+```
+
+Verify it works:
+
+```bash
+recoup whoami
+```
+
+<Tip>
+Get an API key from the [API Keys page](https://chat.recoupable.dev/keys) or use the [agent signup](/agents) for instant key generation.
+</Tip>
+
+## Configuration
+
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `RECOUP_API_KEY` | Yes | — | Your Recoup API key |
+| `RECOUP_API_URL` | No | `https://recoup-api.vercel.app` | API base URL override; set `https://api.recoupable.dev` to use the canonical API domain |
+
+All commands support `--json` for machine-readable output and `--help` for usage info.
+
+---
+
+## Commands
+
+### whoami
+
+Show the authenticated account. See [`GET /api/accounts/id`](/api-reference/accounts/id).
+
+```bash
+recoup whoami
+recoup whoami --json
+```
+
+### orgs
+
+List organizations. See [`GET /api/organizations`](/api-reference/organizations/list).
+
+```bash
+recoup orgs list
+recoup orgs list --account <accountId>
+```
+
+### artists
+
+List artists. See [`GET /api/artists`](/api-reference/artists/list).
+
+```bash
+recoup artists list
+recoup artists list --org <orgId>
+recoup artists list --account <accountId>
+```
+
+### emails
+
+Send an email to the authenticated account. See [`POST /api/emails`](/api-reference/emails/create).
+
+```bash
+recoup emails --subject "Pulse Report" --text "Here's your weekly summary."
+recoup emails --subject "Update" --html "<h1>Report</h1><p>Details here.</p>"
+```
+
+| Flag | Required | Description |
+|------|----------|-------------|
+| `--subject <text>` | No | Email subject line; defaults from the body when omitted |
+| `--text <body>` | No | Plain text or Markdown body |
+| `--html <body>` | No | Raw HTML body (takes precedence over `--text`) |
+| `--cc <email>` | No | CC recipient (repeatable) |
+| `--chat-id <id>` | No | Chat ID for a chat link in the email footer |
+| `--account <accountId>` | No | Send to a specific account (org keys only) |
+
+### chats
+
+Manage chats. See [`GET /api/chats`](/api-reference/chat/chats) and [`POST /api/chats`](/api-reference/chat/create).
+
+```bash
+recoup chats list
+recoup chats create --name "My Topic"
+recoup chats create --name "My Topic" --artist <artistId>
+```
+
+### sandboxes
+
+Manage sandboxes. See [`GET /api/sandboxes`](/api-reference/sandboxes/list) and [`POST /api/sandboxes`](/api-reference/sandboxes/create).
+
+```bash
+recoup sandboxes list
+recoup sandboxes create
+recoup sandboxes create --command "ls -la"
+```
+
+### tasks
+
+Check background task status. See [`GET /api/tasks/runs`](/api-reference/tasks/runs).
+
+```bash
+recoup tasks status --run <runId>
+```
+
+### songs
+
+Run AI music analysis. See [`POST /api/songs/analyze`](/api-reference/songs/analyze) and [`GET /api/songs/analyze/presets`](/api-reference/songs/analyze-presets).
+
+```bash
+recoup songs presets
+recoup songs analyze --preset catalog_metadata --audio https://example.com/track.mp3
+recoup songs analyze --prompt "Describe the production style" --audio https://example.com/track.mp3
+```
+
+Exactly one of `--preset` or `--prompt` is required, together with `--audio`. The API rejects both selectors together and verifies the audio URL before inference. The coordinated CLI validation fix reports these errors before sending a request; older installed packages may send them to the API.
+
+| Flag | Required | Description |
+|------|----------|-------------|
+| `--preset <name>` | Conditional | Curated analysis preset. Required when `--prompt` is omitted. |
+| `--prompt <text>` | Conditional | Custom text prompt. Required when `--preset` is omitted. |
+| `--audio <url>` | Yes | Public URL to an audio file (MP3, WAV, FLAC), required for every preset and custom prompt. Metadata-only analysis is not supported. |
+| `--max-tokens <n>` | No | Max tokens to generate (default 512). |
+
+---
+
+## content
+
+Content creation pipeline — generate AI-powered social videos for artists.
+
+### List templates
+
+```bash
+recoup content templates
+```
+
+### Validate an artist
+
+Check that an artist has the required assets before creating content. See [`GET /api/content/validate`](/api-reference/content/validate).
+
+```bash
+recoup content validate --artist <artistAccountId>
+```
+
+### Estimate cost
+
+Preview estimated cost and duration before kicking off the pipeline. See [`GET /api/content/estimate`](/api-reference/content/estimate).
+
+```bash
+recoup content estimate
+recoup content estimate --lipsync --batch 2 --compare
+```
+
+### Create content
+
+Run the full content-creation pipeline for an artist. See [`POST /api/content/create`](/api-reference/content/create).
+
+```bash
+recoup content create --artist <artistAccountId>
+recoup content create --artist <artistAccountId> --template <name> --lipsync --upscale
+```
+
+| Flag | Required | Description |
+|------|----------|-------------|
+| `--artist <id>` | Yes | Artist account ID |
+| `--template <name>` | No | Template name (default: random) |
+| `--lipsync` | No | Enable lipsync mode |
+| `--upscale` | No | Enable upscaling |
+| `--caption-length <n>` | No | Max caption length in characters |
+
+<Tip>
+For finer-grained control (individual image, video, caption, transcription, edit, upscale, or analyze operations), call the [content REST endpoints](/api-reference/content/generate-image) directly. Those primitives aren't yet exposed as individual CLI subcommands.
+</Tip>
