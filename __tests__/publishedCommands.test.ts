@@ -106,4 +106,24 @@ describe("published command contract (built CLI, intercepted requests)", () => {
       expect(result.requests).toEqual([expected[index]]);
     });
   });
+
+  it("runs every cost estimate example as GET with the documented query flags", () => {
+    const commands = examples("Estimate cost");
+    expect(commands).toHaveLength(2);
+    const expectedQueries = [
+      { lipsync: "false", batch: "1", compare: "false" },
+      { lipsync: "true", batch: "2", compare: "true" },
+    ];
+    commands.forEach((command, index) => {
+      const result = run(command);
+      expect(result.status).toBe(0);
+      expect(result.requests).toHaveLength(1);
+      const request = result.requests[0];
+      expect(request).toMatchObject({ method: "GET", body: null });
+      const url = new URL(request.path, "https://cli-fixture.invalid");
+      expect(url.pathname).toBe("/api/content/estimate");
+      expect([...url.searchParams]).toHaveLength(3);
+      expect(Object.fromEntries(url.searchParams)).toEqual(expectedQueries[index]);
+    });
+  });
 });
