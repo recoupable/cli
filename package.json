@@ -2,6 +2,10 @@
   "name": "@recoupable/cli",
   "version": "0.1.18",
   "description": "Recoup platform CLI",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/recoupable/cli.git"
+  },
   "type": "module",
   "bin": {
     "recoup": "./dist/bin.cjs"
