@@ -39,10 +39,17 @@ jobs:
       - run: pnpm install --frozen-lockfile
 
       # Bump in the working tree only; it is committed after a successful publish
-      # so a failed run never leaves an unpublished version on main.
+      # so a failed run never leaves an unpublished version on main. Bumping from
+      # the higher of npm's latest and package.json keeps a rerun from re-publishing
+      # a version whose bump commit never reached main.
       - name: Bump patch version
         id: bump
-        run: echo "version=$(npm version patch --no-git-tag-version)" >> "$GITHUB_OUTPUT"
+        run: |
+          PUBLISHED=$(npm view @recoupable/cli version)
+          LOCAL=$(node -p "require('./package.json').version")
+          BASE=$(printf '%s\n%s\n' "$PUBLISHED" "$LOCAL" | sort -V | tail -1)
+          npm version "$BASE" --no-git-tag-version --allow-same-version
+          echo "version=$(npm version patch --no-git-tag-version)" >> "$GITHUB_OUTPUT"
 
       - run: pnpm exec tsc --noEmit
 
