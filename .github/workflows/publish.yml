@@ -1,57 +1,59 @@
-name: Publish to npm
+name: Read-only npm token diagnosis
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch: {}
 
-concurrency:
-  group: publish
-  cancel-in-progress: false
+permissions:
+  contents: read
 
 jobs:
-  publish:
+  diagnose:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
+    timeout-minutes: 3
     steps:
-      - uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          # Full history + stay on the branch so the bump step can rebase + push.
-          fetch-depth: 0
-          ref: main
-
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 9
-
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          registry-url: https://registry.npmjs.org
-
-      - run: pnpm install --frozen-lockfile
-
-      - name: Bump patch version
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          # Re-base onto the latest main first so a re-run or a race never hits a
-          # non-fast-forward push (the old failure mode).
-          git pull --rebase origin main
-          VERSION=$(npm version patch --no-git-tag-version)
-          git add package.json
-          git commit -m "chore: bump version to ${VERSION} [skip ci]"
-          git push origin HEAD:main
-
-      - run: pnpm exec tsc --noEmit
-
-      - run: pnpm build
-
-      - run: pnpm test
-
-      - name: Publish to npm
-        run: pnpm publish --no-git-checks
+      - name: Check existing npm authorization without publication
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        shell: bash
+        run: |
+          node --input-type=module <<'JS'
+          const base = 'https://registry.npmjs.org';
+          const target = '@recoupable/cli';
+          const token = process.env.NODE_AUTH_TOKEN;
+          const read = async (path, authenticated = false) => {
+            const response = await fetch(base + path, {
+              headers: authenticated ? { Authorization: `Bearer ${token}` } : {},
+              redirect: 'error', signal: AbortSignal.timeout(20000),
+            });
+            const body = await response.json().catch(() => ({}));
+            return { status: response.status, body };
+          };
+          try {
+            const pkg = await read('/@recoupable%2fcli');
+            console.log(JSON.stringify({ check: 'public_package', http: pkg.status,
+              latest: pkg.body['dist-tags']?.latest ?? null }));
+            if (!token) {
+              console.log(JSON.stringify({ check: 'authentication', result: 'secret_missing' }));
+              process.exitCode = 1;
+            } else {
+              const identity = await read('/-/whoami', true);
+              const message = JSON.stringify(identity.body).toLowerCase();
+              console.log(JSON.stringify({ check: 'authentication', http: identity.status,
+                authenticated: identity.status === 200 && typeof identity.body.username === 'string',
+                expiry_or_revocation_reported: /expired|revoked/.test(message) }));
+              if (identity.status === 200 && typeof identity.body.username === 'string') {
+                const access = await read('/-/user/' + encodeURIComponent(identity.body.username) + '/package', true);
+                const permission = access.body[target];
+                console.log(JSON.stringify({ check: 'target_package_access', http: access.status,
+                  permission: ['read-write', 'read-only'].includes(permission) ? permission : 'not_reported' }));
+                if (access.status !== 200 || permission !== 'read-write') process.exitCode = 1;
+              } else process.exitCode = 1;
+            }
+          } catch {
+            console.log(JSON.stringify({ check: 'registry_request', result: 'transport_or_response_failure' }));
+            process.exitCode = 1;
+          }
+          JS
