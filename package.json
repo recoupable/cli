@@ -1,11 +1,27 @@
 {
   "name": "@recoupable/cli",
   "version": "0.1.20",
-  "description": "Recoup platform CLI",
+  "description": "Command-line tool for Recoup, the AI agent platform for the music industry: artists, research, content and sandboxes from your terminal or agent.",
+  "keywords": [
+    "recoup",
+    "recoupable",
+    "music",
+    "music-industry",
+    "record-label",
+    "artists",
+    "music-marketing",
+    "ai-agents",
+    "cli"
+  ],
+  "homepage": "https://docs.recoupable.dev/cli",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/recoupable/cli.git"
   },
+  "bugs": {
+    "url": "https://github.com/recoupable/cli/issues"
+  },
+  "license": "MIT",
   "type": "module",
   "bin": {
     "recoup": "./dist/bin.cjs"

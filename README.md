@@ -1,6 +1,6 @@
 # @recoupable/cli
 
-Command-line interface for the [Recoup](https://recoupable.com) platform.
+Command-line interface for [Recoup](https://recoupable.dev), the AI agent platform for the music industry. Full reference: [docs.recoupable.dev/cli](https://docs.recoupable.dev/cli).
 
 ## Quick Start
 
@@ -12,7 +12,7 @@ npm install -g @recoupable/cli
 
 ### Authenticate
 
-Get your API key from the [Recoup Developer Dashboard](https://developers.recoupable.com/api-reference/introduction#getting-your-api-key), then set it as an environment variable:
+Get your API key by following the [authentication guide](https://docs.recoupable.dev/authentication), then set it as an environment variable:
 
 ```bash
 export RECOUP_API_KEY=your-api-key
