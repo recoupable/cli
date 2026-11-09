@@ -7,22 +7,12 @@ export interface ApiResponse {
   [key: string]: unknown;
 }
 
-export async function get(
-  path: string,
-  params?: Record<string, string>,
+async function request(
+  url: URL,
+  options: Pick<RequestInit, "method" | "body">,
 ): Promise<ApiResponse> {
-  const baseUrl = getBaseUrl();
-  const url = new URL(path, baseUrl);
-  if (params) {
-    for (const [key, value] of Object.entries(params)) {
-      if (value !== undefined && value !== "") {
-        url.searchParams.set(key, value);
-      }
-    }
-  }
-
   const response = await fetch(url.toString(), {
-    method: "GET",
+    ...options,
     headers: {
       "x-api-key": getApiKey(),
       "Content-Type": "application/json",
@@ -38,27 +28,28 @@ export async function get(
   return data;
 }
 
+export async function get(
+  path: string,
+  params?: Record<string, string>,
+): Promise<ApiResponse> {
+  const url = new URL(path, getBaseUrl());
+  if (params) {
+    for (const [key, value] of Object.entries(params)) {
+      if (value !== undefined && value !== "") {
+        url.searchParams.set(key, value);
+      }
+    }
+  }
+
+  return request(url, { method: "GET" });
+}
+
 export async function post(
   path: string,
   body: Record<string, unknown>,
 ): Promise<ApiResponse> {
-  const baseUrl = getBaseUrl();
-  const url = new URL(path, baseUrl);
-
-  const response = await fetch(url.toString(), {
+  return request(new URL(path, getBaseUrl()), {
     method: "POST",
-    headers: {
-      "x-api-key": getApiKey(),
-      "Content-Type": "application/json",
-    },
     body: JSON.stringify(body),
   });
-
-  const data: ApiResponse = await response.json();
-
-  if (!response.ok || data.status === "error") {
-    throw new Error(data.error || data.message || `Request failed: ${response.status}`);
-  }
-
-  return data;
 }

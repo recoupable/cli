@@ -112,3 +112,30 @@ describe("post", () => {
     await expect(post("/api/test", {})).rejects.toThrow("Bad request");
   });
 });
+
+for (const [method, send] of [
+  ["GET", () => get("/api/test")],
+  ["POST", () => post("/api/test", {})],
+] as const) {
+  describe(`${method} response contract`, () => {
+    it.each([
+      [false, { error: "Preferred", message: "Other" }, "Preferred"],
+      [false, { message: "Rejected" }, "Rejected"],
+      [false, {}, "Request failed: 503"],
+      [true, { status: "error", message: "Application rejected" }, "Application rejected"],
+    ])("retains error precedence for HTTP ok=%s and %j", async (ok, data, message) => {
+      mockFetch.mockResolvedValue({ ok, status: 503, json: async () => data });
+      await expect(send()).rejects.toThrow(message);
+    });
+
+    it("propagates an invalid JSON response without retrying", async () => {
+      mockFetch.mockClear();
+      mockFetch.mockResolvedValue({
+        ok: false,
+        json: async () => { throw new SyntaxError("Invalid JSON"); },
+      });
+      await expect(send()).rejects.toThrow("Invalid JSON");
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+    });
+  });
+}
