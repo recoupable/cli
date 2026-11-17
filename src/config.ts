@@ -11,7 +11,5 @@ export function getApiKey(): string {
 }
 
 export function getBaseUrl(): string {
-  return (
-    process.env.RECOUP_API_URL || "https://recoup-api.vercel.app"
-  );
+  return process.env.RECOUP_API_URL || "https://api.recoupable.dev";
 }

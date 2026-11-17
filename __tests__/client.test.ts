@@ -105,10 +105,37 @@ describe("post", () => {
     mockFetch.mockResolvedValue({
       ok: false,
       status: 400,
-      json: () =>
-        Promise.resolve({ status: "error", message: "Bad request" }),
+      json: () => Promise.resolve({ status: "error", message: "Bad request" }),
     });
 
     await expect(post("/api/test", {})).rejects.toThrow("Bad request");
   });
+});
+
+describe("transport errors", () => {
+  it.each(["GET", "POST"])(
+    "preserves the original %s network failure",
+    async (method) => {
+      const failure = new TypeError("synthetic network failure");
+      mockFetch.mockRejectedValueOnce(failure);
+      await expect(
+        method === "GET" ? get("/api/test") : post("/api/test", {}),
+      ).rejects.toBe(failure);
+    },
+  );
+  it.each(["GET", "POST"])(
+    "rejects %s redirects without parsing or exposing response details",
+    async (method) => {
+      const json = vi.fn();
+      mockFetch.mockResolvedValueOnce({ status: 307, ok: false, json });
+      await expect(
+        method === "GET"
+          ? get("/api/test?private=synthetic")
+          : post("/api/test?private=synthetic", { private: "synthetic" }),
+      ).rejects.toThrow(
+        "API redirect rejected. Use a trusted API URL that does not redirect.",
+      );
+      expect(json).not.toHaveBeenCalled();
+    },
+  );
 });
