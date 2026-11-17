@@ -25,8 +25,9 @@ pnpm test           # Run tests with vitest
 - `src/commands/` — One file per command group
 
 ## API Base URL
-Default: `https://recoup-api.vercel.app`
+Default: `https://api.recoupable.dev`
 Override: `RECOUP_API_URL` env var
+GET/POST requests reject redirects (`redirect: "error"`); never forward credentials to a redirect target.
 
 ## Code Principles
 - SRP: One exported function per file

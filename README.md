@@ -124,7 +124,12 @@ establish that a new npm version has been published.
 | Variable | Required | Description |
 |----------|----------|-------------|
 | `RECOUP_API_KEY` | Yes | Your Recoup API key |
-| `RECOUP_API_URL` | No | API base URL (default: `https://recoup-api.vercel.app`) |
+| `RECOUP_API_URL` | No | API base URL (default: `https://api.recoupable.dev`) |
+
+GET and POST requests reject redirects instead of forwarding the API key or request
+to the redirect target. `RECOUP_API_URL` still selects the initial API origin; use
+only an endpoint you trust with your API key. This source behavior does not establish
+which version is published or installed.
 
 ## License
 

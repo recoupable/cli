@@ -23,6 +23,7 @@ export async function get(
 
   const response = await fetch(url.toString(), {
     method: "GET",
+    redirect: "error",
     headers: {
       "x-api-key": getApiKey(),
       "Content-Type": "application/json",
@@ -32,7 +33,9 @@ export async function get(
   const data: ApiResponse = await response.json();
 
   if (!response.ok || data.status === "error") {
-    throw new Error(data.error || data.message || `Request failed: ${response.status}`);
+    throw new Error(
+      data.error || data.message || `Request failed: ${response.status}`,
+    );
   }
 
   return data;
@@ -47,6 +50,7 @@ export async function post(
 
   const response = await fetch(url.toString(), {
     method: "POST",
+    redirect: "error",
     headers: {
       "x-api-key": getApiKey(),
       "Content-Type": "application/json",
@@ -57,7 +61,9 @@ export async function post(
   const data: ApiResponse = await response.json();
 
   if (!response.ok || data.status === "error") {
-    throw new Error(data.error || data.message || `Request failed: ${response.status}`);
+    throw new Error(
+      data.error || data.message || `Request failed: ${response.status}`,
+    );
   }
 
   return data;
