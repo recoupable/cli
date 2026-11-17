@@ -76,6 +76,9 @@ it.each(redirects)(
     expect(originalRequests).toBe(1);
     expect(destinationRequests).toBe(0);
     expect(result.error).toBeInstanceOf(Error);
+    expect(result.error.message).toBe(
+      "API redirect rejected. Use a trusted API URL that does not redirect.",
+    );
     expect(result.value).toBeUndefined();
   },
 );

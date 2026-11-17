@@ -27,7 +27,7 @@ pnpm test           # Run tests with vitest
 ## API Base URL
 Default: `https://api.recoupable.dev`
 Override: `RECOUP_API_URL` env var
-GET/POST requests reject redirects (`redirect: "error"`); never forward credentials to a redirect target.
+GET/POST requests reject redirects (`redirect: "manual"` with explicit 3xx rejection); never forward credentials to a redirect target.
 
 ## Code Principles
 - SRP: One exported function per file

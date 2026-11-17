@@ -23,12 +23,16 @@ export async function get(
 
   const response = await fetch(url.toString(), {
     method: "GET",
-    redirect: "error",
+    redirect: "manual",
     headers: {
       "x-api-key": getApiKey(),
       "Content-Type": "application/json",
     },
   });
+
+  if (response.status >= 300 && response.status < 400) {
+    throw new Error("API redirect rejected. Use a trusted API URL that does not redirect.");
+  }
 
   const data: ApiResponse = await response.json();
 
@@ -50,13 +54,17 @@ export async function post(
 
   const response = await fetch(url.toString(), {
     method: "POST",
-    redirect: "error",
+    redirect: "manual",
     headers: {
       "x-api-key": getApiKey(),
       "Content-Type": "application/json",
     },
     body: JSON.stringify(body),
   });
+
+  if (response.status >= 300 && response.status < 400) {
+    throw new Error("API redirect rejected. Use a trusted API URL that does not redirect.");
+  }
 
   const data: ApiResponse = await response.json();
 
